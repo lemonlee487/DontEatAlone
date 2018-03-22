@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "786860170701",
+    "firebase_url": "https://donteatalone-15a60.firebaseio.com",
+    "project_id": "donteatalone-15a60",
+    "storage_bucket": "donteatalone-15a60.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:786860170701:android:671ab973963a3678",
+        "android_client_info": {
+          "package_name": "cyruslee487.donteatalone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "786860170701-758gt5j6i4gu5guue747mph43ngc7lbs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "cyruslee487.donteatalone",
+            "certificate_hash": "6871cd15ee70501bf70a56a3d9e9e211286e3f68"
+          }
+        },
+        {
+          "client_id": "786860170701-pbvv26gqa3e9tl997ognr1r69hoqt9to.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuYzhuTB8ewjDKDnKiPeAgi5OyO3UVCWw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "786860170701-pbvv26gqa3e9tl997ognr1r69hoqt9to.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

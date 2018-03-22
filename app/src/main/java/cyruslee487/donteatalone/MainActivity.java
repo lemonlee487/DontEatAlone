@@ -20,7 +20,6 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    //Aylmao
 
     private static final String TAG = "DB";
 
@@ -55,7 +54,8 @@ public class MainActivity extends AppCompatActivity
 
         initBitmaps();
     }
-    
+
+    //Recycler View
     private void initBitmaps(){
         Log.d(TAG, "init: perparing images");
 
@@ -92,9 +92,8 @@ public class MainActivity extends AppCompatActivity
         RecyclerViewAdapter mAdapter = new RecyclerViewAdapter(this, mImageNames, mImagesUrls);
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
     }
-
-
 
     @Override
     public void onBackPressed() {
