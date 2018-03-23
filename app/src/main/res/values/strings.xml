@@ -4,5 +4,24 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
+    <string name="McDonald">McDonald</string>
+    <string name="KFC">KFC</string>
+    <string name="RR">Red Robin</string>
+    <string name="Wendy">Wendy\'s</string>
+    <string name="PizzaHut">Pizza Hut</string>
+    <string name="Domino">Domino\'s</string>
+    <string name="WhiteSpot">White Spot</string>
+    <string name="Boston">Boston Pizza</string>
+
+    <string name="McDonald_Url">http://computercleaning.files.wordpress.com/2008/03/mcdonalds.jpg</string>
+    <string name="KFC_Url">https://www.startwire.com/job-applications/logos/kfc.png</string>
+    <string name="RR_Url">https://fthmb.tqn.com/4GbIePRLV9MWmqtQMDWRMTaF3wc=/2000x1500/filters:fill(auto,1)/red-robin-logo-581753a33df78cc2e89d269c.PNG</string>
+    <string name="Wendy_Url">https://upload.wikimedia.org/wikipedia/en/thumb/6/66/Wendy%27s_logo_2012.svg/1200px-Wendy%27s_logo_2012.svg.png</string>
+    <string name="PizzaHut_Url">https://vignette.wikia.nocookie.net/logopedia/images/b/b3/Pizza_Hut_Logo_2.png/revision/latest?cb=20161129133747</string>
+    <string name="Domino_Url">https://s3-media4.fl.yelpcdn.com/bphoto/uM02kVl22c0R5_btCDmwDQ/ls.jpg</string>
+    <string name="WhiteSpot_Url">https://www.whitespot.ca/sites/all/themes/whitespot/logo.png</string>
+    <string name="Boston_Url">https://pbs.twimg.com/profile_images/899615036699574272/qC1FzTOv_400x400.jpg</string>
+
+
     <string name="action_settings">Settings</string>
 </resources>

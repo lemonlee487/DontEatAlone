@@ -25,6 +25,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     //vars
     private ArrayList<String> mImageNames = new ArrayList<>();
     private ArrayList<String> mImages = new ArrayList<>();
+    private ArrayList<Restaurant> mRestaurants = new ArrayList<>();
     private Context mContext;
 
     public RecyclerViewAdapter(Context mContext,
@@ -47,6 +48,22 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public void onBindViewHolder(mViewHolder holder, final int position) {
         Log.d(TAG, "onBindViewHolder: called");
 
+        final Restaurant restaurant = mRestaurants.get(position);
+
+        Glide.with(mContext)
+                .load(restaurant.getImageUrl())
+                .into(holder.list_item_image_view);
+
+        holder.list_item_text_view.setText(restaurant.getName());
+
+        holder.parentLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: " + restaurant.getName());
+            }
+        });
+
+        /*
         Glide.with(mContext)
                 .load(mImages.get(position))
                 .into(holder.list_item_image_view);
@@ -59,6 +76,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 Log.d(TAG, "onClick: " + mImageNames.get(position));
             }
         });
+        */
 
     }
 
@@ -66,8 +84,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public int getItemCount() {
         return mImages.size();
     }
-
-
 
     public class mViewHolder extends RecyclerView.ViewHolder{
         TextView list_item_text_view;

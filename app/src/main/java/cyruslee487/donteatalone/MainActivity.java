@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity
     //vars
     private ArrayList<String> mImageNames = new ArrayList<>();
     private ArrayList<String> mImagesUrls = new ArrayList<>();
+    private ArrayList<Restaurant> mRestaurants = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,29 +61,7 @@ public class MainActivity extends AppCompatActivity
     private void initBitmaps(){
         Log.d(TAG, "init: perparing images");
 
-        mImagesUrls.add("http://computercleaning.files.wordpress.com/2008/03/mcdonalds.jpg");
-        mImageNames.add("McDonald");
-
-        mImagesUrls.add("https://www.startwire.com/job-applications/logos/kfc.png");
-        mImageNames.add("KFC");
-
-        mImagesUrls.add("https://fthmb.tqn.com/4GbIePRLV9MWmqtQMDWRMTaF3wc=/2000x1500/filters:fill(auto,1)/red-robin-logo-581753a33df78cc2e89d269c.PNG");
-        mImageNames.add("Red Robin");
-
-        mImagesUrls.add("https://upload.wikimedia.org/wikipedia/en/thumb/6/66/Wendy%27s_logo_2012.svg/1200px-Wendy%27s_logo_2012.svg.png");
-        mImageNames.add("Wendy's");
-
-        mImagesUrls.add("https://vignette.wikia.nocookie.net/logopedia/images/b/b3/Pizza_Hut_Logo_2.png/revision/latest?cb=20161129133747");
-        mImageNames.add("Pizza Hut");
-
-        mImagesUrls.add("https://s3-media4.fl.yelpcdn.com/bphoto/uM02kVl22c0R5_btCDmwDQ/ls.jpg");
-        mImageNames.add("Domino's");
-
-        mImagesUrls.add("https://www.whitespot.ca/sites/all/themes/whitespot/logo.png");
-        mImageNames.add("White Spot");
-
-        mImagesUrls.add("https://pbs.twimg.com/profile_images/899615036699574272/qC1FzTOv_400x400.jpg");
-        mImageNames.add("Boston Pizza");
+        //insertImageArray(getResources().getString(R.string.));
 
         initRecyclerView();
     }
@@ -93,6 +73,11 @@ public class MainActivity extends AppCompatActivity
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+    }
+
+    private void insertImageArray(String image_name, String image_url){
+        Restaurant restaurant = new Restaurant(image_name, image_url);
+        mRestaurants.add(restaurant);
     }
 
     @Override
