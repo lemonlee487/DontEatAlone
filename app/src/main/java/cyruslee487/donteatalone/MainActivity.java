@@ -61,15 +61,37 @@ public class MainActivity extends AppCompatActivity
     private void initBitmaps(){
         Log.d(TAG, "init: perparing images");
 
-        //insertImageArray(getResources().getString(R.string.));
+        insertImageArray(getResources().getString(R.string.McDonald)
+                ,getResources().getString(R.string.McDonald_Url));
+
+        insertImageArray(getResources().getString(R.string.KFC)
+                ,getResources().getString(R.string.KFC_Url));
+
+        insertImageArray(getResources().getString(R.string.Wendy)
+                ,getResources().getString(R.string.Wendy_Url));
+
+        insertImageArray(getResources().getString(R.string.RR)
+                ,getResources().getString(R.string.RR_Url));
+
+        insertImageArray(getResources().getString(R.string.WhiteSpot)
+                ,getResources().getString(R.string.WhiteSpot_Url));
+
+        insertImageArray(getResources().getString(R.string.PizzaHut)
+                ,getResources().getString(R.string.PizzaHut_Url));
+
+        insertImageArray(getResources().getString(R.string.Domino)
+                ,getResources().getString(R.string.Domino_Url));
+
+        insertImageArray(getResources().getString(R.string.Boston)
+                ,getResources().getString(R.string.Boston_Url));
 
         initRecyclerView();
     }
 
     private void initRecyclerView(){
-        Log.d(TAG, "initRecyclerView: ");
+        Log.d(TAG, "initRecyclerView: " + mRestaurants.size());
         RecyclerView recyclerView = findViewById(R.id.recyclerview_content_main);
-        RecyclerViewAdapter mAdapter = new RecyclerViewAdapter(this, mImageNames, mImagesUrls);
+        RecyclerViewAdapter mAdapter = new RecyclerViewAdapter(this, mRestaurants);
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 

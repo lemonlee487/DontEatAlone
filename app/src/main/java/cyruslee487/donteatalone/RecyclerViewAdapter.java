@@ -36,6 +36,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         this.mContext = mContext;
     }
 
+    public RecyclerViewAdapter(Context mContext, ArrayList<Restaurant> mRestaurants) {
+        this.mContext = mContext;
+        this.mRestaurants = mRestaurants;
+    }
+
     @Override
     public mViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).
@@ -63,26 +68,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             }
         });
 
-        /*
-        Glide.with(mContext)
-                .load(mImages.get(position))
-                .into(holder.list_item_image_view);
-
-        holder.list_item_text_view.setText(mImageNames.get(position));
-
-        holder.parentLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "onClick: " + mImageNames.get(position));
-            }
-        });
-        */
-
     }
 
     @Override
     public int getItemCount() {
-        return mImages.size();
+        //return mImages.size();
+        return mRestaurants.size();
     }
 
     public class mViewHolder extends RecyclerView.ViewHolder{
