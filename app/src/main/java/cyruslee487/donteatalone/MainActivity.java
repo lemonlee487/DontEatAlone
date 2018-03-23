@@ -192,6 +192,12 @@ public class MainActivity extends AppCompatActivity
         if(mFirebaseAuth != null) {
             mFirebaseAuth.addAuthStateListener(mAuthStateListener);
         }
+        Log.d(TAG, "onResume: username ===> " + mUsername);
+        if(mUsername == ANONYMOUS) {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            mUsername = user.getDisplayName();
+            Log.d(TAG, "onResume: username ===> " + mUsername);
+        }
     }
 
     @Override
@@ -236,9 +242,15 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initRecyclerView(){
-        Log.d(TAG, "initRecyclerView: " + mRestaurants.size());
+        //Log.d(TAG, "initRecyclerView: " + mUsername);
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        mUsername = user.getDisplayName();
+        Log.d(TAG, "initRecyclerView: username: " + mUsername);
+
         RecyclerView recyclerView = findViewById(R.id.recyclerview_content_main);
-        RecyclerViewAdapter mAdapter = new RecyclerViewAdapter(this, mRestaurants);
+        RecyclerViewAdapter mAdapter =
+                new RecyclerViewAdapter(this, mUsername, mRestaurants);
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
