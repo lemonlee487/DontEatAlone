@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="15dp"
+    android:padding="10dp"
     android:id="@+id/relative_list_item">
 
 
@@ -12,7 +12,7 @@
         android:layout_height="80dp"
         android:id="@+id/image_list_item"
         android:src="@mipmap/ic_launcher"
-        android:layout_marginLeft="15dp" />
+        />
 
     <TextView
         android:layout_width="wrap_content"
@@ -21,8 +21,19 @@
         android:text="Canada"
         android:layout_toRightOf="@+id/image_list_item"
         android:textColor="#000"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="30dp"
-        android:textSize="25sp"/>
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="10dp"
+        android:textSize="20sp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textview2_list_item"
+        android:text="Restaruant address *********************"
+        android:layout_toRightOf="@+id/image_list_item"
+        android:textColor="#000"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="45dp"
+        android:textSize="13sp"/>
 
 </RelativeLayout>
