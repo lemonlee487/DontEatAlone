@@ -25,7 +25,6 @@ public class RestaurantInfoActivity extends AppCompatActivity {
     private String IMAGE_NAME = "image_name";
 
     //vars
-    private String mUsername;
     private String mImageUrl;
     private String mImageName;
     private ImageView imageView;
@@ -38,20 +37,19 @@ public class RestaurantInfoActivity extends AppCompatActivity {
         setContentView(R.layout.restaurant_info_activity);
 
         Intent intent = getIntent();
-        if(intent.hasExtra(USER_NAME) && intent.hasExtra(IMAGE_URL) && intent.hasExtra(IMAGE_NAME)) {
-            mUsername = intent.getStringExtra(USER_NAME);
+        if(intent.hasExtra(IMAGE_URL) && intent.hasExtra(IMAGE_NAME)) {
             mImageUrl = intent.getStringExtra(IMAGE_URL);
             mImageName = intent.getStringExtra(IMAGE_NAME);
         }
 
-        setImage(mImageUrl, mImageName, mUsername);
+        setImage(mImageUrl, mImageName);
     }
 
-    private void setImage(String imageUrl, String imageName, String username){
+    private void setImage(String imageUrl, String imageName){
         imageView = findViewById(R.id.image_info_activity);
         textView = findViewById(R.id.textview_info_activity);
 
-        textView.setText(username + "\n" + imageName);
+        textView.setText(imageName);
 
         Glide.with(this)
                 .load(imageUrl)

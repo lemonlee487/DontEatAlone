@@ -43,8 +43,8 @@ public class MainActivity extends AppCompatActivity
     private static final int RC_SIGN_IN = 1001;
 
     //vars
-    private ArrayList<String> mImageNames = new ArrayList<>();
-    private ArrayList<String> mImagesUrls = new ArrayList<>();
+    //private ArrayList<String> mImageNames = new ArrayList<>();
+    //private ArrayList<String> mImagesUrls = new ArrayList<>();
     private ArrayList<Restaurant> mRestaurants = new ArrayList<>();
     private String mUsername;
 
@@ -250,7 +250,7 @@ public class MainActivity extends AppCompatActivity
 
         RecyclerView recyclerView = findViewById(R.id.recyclerview_content_main);
         RecyclerViewAdapter mAdapter =
-                new RecyclerViewAdapter(this, mUsername, mRestaurants);
+                new RecyclerViewAdapter(this, mRestaurants);
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
