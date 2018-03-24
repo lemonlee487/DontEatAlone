@@ -25,7 +25,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     //Constants
     private String TAG = "DB";
-    private String USER_NAME = "username";
     private String IMAGE_URL = "image_url";
     private String IMAGE_NAME = "image_name";
 
@@ -33,20 +32,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private ArrayList<String> mImageNames = new ArrayList<>();
     private ArrayList<String> mImages = new ArrayList<>();
     private ArrayList<Restaurant> mRestaurants = new ArrayList<>();
-    private String mUsername;
     private Context mContext;
 
-    public RecyclerViewAdapter(Context mContext,
-                               ArrayList<String> mImageNames,
-                               ArrayList<String> mImages) {
-        this.mImageNames = mImageNames;
-        this.mImages = mImages;
+    public RecyclerViewAdapter(Context mContext, ArrayList<Restaurant> mRestaurants) {
         this.mContext = mContext;
-    }
-
-    public RecyclerViewAdapter(Context mContext, String mUsername, ArrayList<Restaurant> mRestaurants) {
-        this.mContext = mContext;
-        this.mUsername = mUsername;
         this.mRestaurants = mRestaurants;
         //Log.d(TAG, "RecyclerViewAdapter: Constructor: "+this.mUsername + "____" + mUsername);
     }
@@ -77,8 +66,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             public void onClick(View view) {
                 Log.d(TAG, "onClick: " + restaurant.getName());
                 Intent intent = new Intent(mContext ,RestaurantInfoActivity.class);
-                Log.d(TAG, "onClick: RecyclerViewAdapter: "+ mUsername);
-                intent.putExtra(USER_NAME, mUsername);
+
                 intent.putExtra(IMAGE_URL, restaurant.getImageUrl());
                 intent.putExtra(IMAGE_NAME, restaurant.getName());
                 mContext.startActivity(intent);

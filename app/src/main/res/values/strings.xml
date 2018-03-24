@@ -22,6 +22,8 @@
     <string name="WhiteSpot_Url">https://www.whitespot.ca/sites/all/themes/whitespot/logo.png</string>
     <string name="Boston_Url">https://pbs.twimg.com/profile_images/899615036699574272/qC1FzTOv_400x400.jpg</string>
 
+    <string name="Eat_here">Eat here</string>
 
     <string name="action_settings">Settings</string>
+    <string name="title_activity_find_event">FindEventActivity</string>
 </resources>

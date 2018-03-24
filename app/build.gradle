@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "cyruslee487.donteatalone"
-        minSdkVersion 23
+        minSdkVersion 24
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -49,6 +49,7 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-database:3.2.2'
     implementation 'com.firebaseui:firebase-ui-auth:3.2.2'
 }
+
 
 
 

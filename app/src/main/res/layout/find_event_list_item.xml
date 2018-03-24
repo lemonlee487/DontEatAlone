@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:id="@+id/relative__find_event_list_item">
+
+
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/image_find_event_list_item"
+        android:src="@mipmap/ic_launcher"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/restaurant_name_find_event_list_item"
+        android:text="Restaurant Name"
+        android:layout_toRightOf="@+id/image_list_item"
+        android:textColor="#000"
+        android:layout_marginLeft="100dp"
+        android:layout_marginTop="90dp"
+        android:textSize="20sp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/username_find_event_list_item"
+        android:text="User01"
+        android:layout_toRightOf="@+id/image_list_item"
+        android:textColor="#000"
+        android:layout_marginLeft="100dp"
+        android:layout_marginTop="0dp"
+        android:textSize="20sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/address_find_event_list_item"
+        android:text="Restaruant address *********************"
+        android:layout_toRightOf="@+id/image_list_item"
+        android:textColor="#000"
+        android:layout_marginLeft="100dp"
+        android:layout_marginTop="120dp"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/date_find_event_list_item"
+        android:text="2018/01/01"
+        android:layout_toRightOf="@+id/image_list_item"
+        android:textColor="#000"
+        android:layout_marginLeft="100dp"
+        android:layout_marginTop="30dp"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/time_find_event_list_item"
+        android:text="00:00"
+        android:layout_toRightOf="@+id/image_list_item"
+        android:textColor="#000"
+        android:layout_marginLeft="100dp"
+        android:layout_marginTop="60dp"
+        android:textSize="16sp"/>
+
+</RelativeLayout>
