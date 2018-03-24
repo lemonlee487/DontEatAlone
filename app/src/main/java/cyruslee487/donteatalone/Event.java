@@ -6,15 +6,28 @@ package cyruslee487.donteatalone;
 
 public class Event {
 
-    String restaurant_name;
+    String restaurant_name, username;
     String location;
     String date, time;
 
-    public Event(String restaurant_name,String location, String date, String time){
+    public Event(){
+    }
+
+    public Event(String username, String restaurant_name, String location, String date, String time){
+        this.username = username;
+
         this.restaurant_name = restaurant_name;
         this.location = location;
         this.date = date;
         this.time = time;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getRestaurant_name() {

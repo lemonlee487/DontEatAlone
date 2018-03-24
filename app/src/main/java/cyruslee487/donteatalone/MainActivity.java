@@ -57,7 +57,6 @@ public class MainActivity extends AppCompatActivity
     private ChildEventListener mChildEventListener;
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
-    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onPostResume() {
@@ -71,15 +70,6 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -87,27 +77,17 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        changeNavMenuItemName(navigationView);
         navigationView.setNavigationItemSelectedListener(this);
 
         initBitmaps();
 
         mUsername = ANONYMOUS;
-
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mFirebaseAuth = FirebaseAuth.getInstance();
         mDatabaseReference = mFirebaseDatabase.getReference().child("events");
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        mFirebaseAuth = FirebaseAuth.getInstance();
 
-        if(getIntent().hasExtra(IMAGE_NAME)
-                && getIntent().hasExtra(SELECT_DATE)
-                && getIntent().hasExtra(SELECT_TIME)){
-            String name = getIntent().getStringExtra(IMAGE_NAME);
-            String date = getIntent().getStringExtra(SELECT_DATE);
-            String time = getIntent().getStringExtra(SELECT_TIME);
-
-            mDatabaseReference.push().setValue(new Event(name, null, date, time));
-            Log.d(TAG, "onCreate: Set value: " + name + "..." + date + "..." + time);
-        }
+        getIntentFromRestaurantInfoActivity();
 
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -115,17 +95,10 @@ public class MainActivity extends AppCompatActivity
                 FirebaseUser mUser = firebaseAuth.getCurrentUser();
                 if(mUser != null){
                     onSignedIn(mUser.getDisplayName());
-
                     Log.d(TAG, "onAuthStateChanged: User signed in");
-                    Toast.makeText(MainActivity.this, "You've signed in", Toast.LENGTH_SHORT)
-                            .show();
                 } else {
                     onSignOutCleanUp();
-
                     Log.d(TAG, "onAuthStateChanged: User signed out");
-                    Toast.makeText(MainActivity.this, "You've signed out", Toast.LENGTH_SHORT)
-                            .show();
-
                     launchSignInIntent();
                 }
             }
@@ -146,6 +119,26 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private void getIntentFromRestaurantInfoActivity(){
+        if(getIntent().hasExtra(IMAGE_NAME)
+                && getIntent().hasExtra(SELECT_DATE)
+                && getIntent().hasExtra(SELECT_TIME)){
+            String name = getIntent().getStringExtra(IMAGE_NAME);
+            String date = getIntent().getStringExtra(SELECT_DATE);
+            String time = getIntent().getStringExtra(SELECT_TIME);
+
+            if(mUsername == ANONYMOUS){
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                mUsername = user.getDisplayName();
+            }
+
+            mDatabaseReference.push().setValue(new Event(mUsername, name, null, date, time));
+
+            Log.d(TAG, "onCreate: Set value: " + mUsername + "___"
+                    + name + "___" + date + "___" + time);
+        }
+    }
+
     private void launchSignInIntent(){
         final List<AuthUI.IdpConfig> providers = Arrays.asList(
                 new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
@@ -163,37 +156,10 @@ public class MainActivity extends AppCompatActivity
 
     private void onSignedIn(String username) {
         mUsername = username;
-        attachDatabaseListener();
     }
 
     private void onSignOutCleanUp(){
         mUsername = ANONYMOUS;
-        detchDatabaseListener();
-    }
-
-    private void attachDatabaseListener() {
-        if(mChildEventListener == null) {
-            mChildEventListener = new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    //FriendlyMessage friendlyMessage = dataSnapshot.getValue(FriendlyMessage.class);
-                    //mMessageAdapter.add(friendlyMessage);
-                    Log.d(TAG, "onChildAdded: ");
-                }
-
-                @Override
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
-                @Override
-                public void onChildRemoved(DataSnapshot dataSnapshot) {}
-                @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
-                @Override
-                public void onCancelled(DatabaseError databaseError) {}
-            };
-
-            //Get notification if anything changes
-            mDatabaseReference.addChildEventListener(mChildEventListener);
-        }
     }
 
     private void detchDatabaseListener(){
@@ -300,7 +266,7 @@ public class MainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Log.d(TAG, "onOptionsItemSelected: sign out");
-            AuthUI.getInstance().signOut(this);
+            //AuthUI.getInstance().signOut(this);
         }
 
         return super.onOptionsItemSelected(item);
@@ -317,6 +283,8 @@ public class MainActivity extends AppCompatActivity
             Log.d(TAG, "onNavigationItemSelected: camera");
         } else if (id == R.id.nav_gallery) {
             Log.d(TAG, "onNavigationItemSelected: gallery");
+            Intent intent = new Intent(this, FindEventActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_slideshow) {
             Log.d(TAG, "onNavigationItemSelected: slideshow");
         } else if (id == R.id.nav_manage) {
@@ -324,11 +292,30 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_share) {
             Log.d(TAG, "onNavigationItemSelected: share");
         } else if (id == R.id.nav_send) {
-            Log.d(TAG, "onNavigationItemSelected: send");
+            Log.d(TAG, "onNavigationItemSelected: send: User sign out");
+            AuthUI.getInstance().signOut(this);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void changeNavMenuItemName(NavigationView navigationView){
+        //Change Navigation Menu item name
+        Menu menu = navigationView.getMenu();
+        MenuItem nav_camara = menu.findItem(R.id.nav_camera);
+        MenuItem nav_gallery = menu.findItem(R.id.nav_gallery);
+        MenuItem nav_slideshow = menu.findItem(R.id.nav_slideshow);
+        MenuItem nav_manage = menu.findItem(R.id.nav_manage);
+        MenuItem nav_share = menu.findItem(R.id.nav_share);
+        MenuItem nav_send = menu.findItem(R.id.nav_send);
+
+        nav_camara.setTitle("Restaurant");
+        nav_gallery.setTitle("Find Event");
+        nav_slideshow.setTitle("My Event");
+        nav_manage.setTitle("Setting");
+        nav_share.setTitle("Profile");
+        nav_send.setTitle("Sign out");
     }
 }
