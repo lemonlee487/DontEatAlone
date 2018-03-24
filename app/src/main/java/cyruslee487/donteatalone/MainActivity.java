@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -40,6 +41,9 @@ public class MainActivity extends AppCompatActivity
 
     private static final String TAG = "DB";
     private static final String ANONYMOUS = "anonymous";
+    private static final String SELECT_DATE = "select_date";
+    private static final String SELECT_TIME = "select_time";
+    private static final String IMAGE_NAME = "image_name";
     private static final int RC_SIGN_IN = 1001;
 
     //vars
@@ -53,6 +57,7 @@ public class MainActivity extends AppCompatActivity
     private ChildEventListener mChildEventListener;
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onPostResume() {
@@ -91,6 +96,18 @@ public class MainActivity extends AppCompatActivity
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mFirebaseAuth = FirebaseAuth.getInstance();
         mDatabaseReference = mFirebaseDatabase.getReference().child("events");
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
+        if(getIntent().hasExtra(IMAGE_NAME)
+                && getIntent().hasExtra(SELECT_DATE)
+                && getIntent().hasExtra(SELECT_TIME)){
+            String name = getIntent().getStringExtra(IMAGE_NAME);
+            String date = getIntent().getStringExtra(SELECT_DATE);
+            String time = getIntent().getStringExtra(SELECT_TIME);
+
+            mDatabaseReference.push().setValue(new Event(name, null, date, time));
+            Log.d(TAG, "onCreate: Set value: " + name + "..." + date + "..." + time);
+        }
 
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -161,7 +178,7 @@ public class MainActivity extends AppCompatActivity
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     //FriendlyMessage friendlyMessage = dataSnapshot.getValue(FriendlyMessage.class);
                     //mMessageAdapter.add(friendlyMessage);
-                    Log.d(TAG, "onChildAdded: Event added " + s);
+                    Log.d(TAG, "onChildAdded: ");
                 }
 
                 @Override
@@ -192,11 +209,12 @@ public class MainActivity extends AppCompatActivity
         if(mFirebaseAuth != null) {
             mFirebaseAuth.addAuthStateListener(mAuthStateListener);
         }
-        Log.d(TAG, "onResume: username ===> " + mUsername);
+        //Log.d(TAG, "onResume: username ===> " + mUsername);
         if(mUsername == ANONYMOUS) {
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            mUsername = user.getDisplayName();
-            Log.d(TAG, "onResume: username ===> " + mUsername);
+            if(user!=null)
+                mUsername = user.getDisplayName();
+            //Log.d(TAG, "onResume: username ===> " + mUsername);
         }
     }
 
@@ -212,7 +230,7 @@ public class MainActivity extends AppCompatActivity
 
     //Recycler View
     private void initBitmaps(){
-        Log.d(TAG, "init: perparing images");
+        //Log.d(TAG, "init: perparing images");
 
         insertImageArray(getResources().getString(R.string.McDonald)
                 ,getResources().getString(R.string.McDonald_Url));
@@ -242,12 +260,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initRecyclerView(){
-        //Log.d(TAG, "initRecyclerView: " + mUsername);
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        mUsername = user.getDisplayName();
-        Log.d(TAG, "initRecyclerView: username: " + mUsername);
-
         RecyclerView recyclerView = findViewById(R.id.recyclerview_content_main);
         RecyclerViewAdapter mAdapter =
                 new RecyclerViewAdapter(this, mRestaurants);
