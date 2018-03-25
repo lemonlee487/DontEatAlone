@@ -1,6 +1,12 @@
 <resources>
     <string name="app_name">Don\'t Eat Alone</string>
 
+    <string name="username">Beta Tester</string>
+    <string name="restaurant_name">Beta Restaurant</string>
+    <string name="restaurant_address">666 Beta street</string>
+    <string name="date">2018/12/12</string>
+    <string name="time">00:01</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 

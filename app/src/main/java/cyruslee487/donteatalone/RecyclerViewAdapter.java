@@ -17,9 +17,6 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
-/**
- * Created by cyrus on 2018-03-22.
- */
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.mViewHolder> {
 
@@ -29,23 +26,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private String IMAGE_NAME = "image_name";
 
     //vars
-    private ArrayList<String> mImageNames = new ArrayList<>();
-    private ArrayList<String> mImages = new ArrayList<>();
     private ArrayList<Restaurant> mRestaurants = new ArrayList<>();
     private Context mContext;
 
     public RecyclerViewAdapter(Context mContext, ArrayList<Restaurant> mRestaurants) {
         this.mContext = mContext;
         this.mRestaurants = mRestaurants;
-        //Log.d(TAG, "RecyclerViewAdapter: Constructor: "+this.mUsername + "____" + mUsername);
     }
 
     @Override
     public mViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).
                 inflate(R.layout.layout_list_item, parent, false);
-        mViewHolder holder = new mViewHolder(view);
-        return holder;
+        return new mViewHolder(view);
     }
 
     @Override
@@ -77,7 +70,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public int getItemCount() {
-        //return mImages.size();
         return mRestaurants.size();
     }
 

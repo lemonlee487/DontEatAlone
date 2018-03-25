@@ -148,6 +148,7 @@ public class RestaurantInfoActivity extends AppCompatActivity{
         intent.putExtra("select_time", time);
         intent.putExtra(IMAGE_NAME, mImageName);
         startActivity(intent);
+        finish();
     }
 
 }

@@ -61,4 +61,15 @@ public class Event {
     public void setTime(String time) {
         this.time = time;
     }
+
+    @Override
+    public String toString() {
+        return "Event{" +
+                "restaurant_name='" + restaurant_name + '\'' +
+                ", username='" + username + '\'' +
+                ", location='" + location + '\'' +
+                ", date='" + date + '\'' +
+                ", time='" + time + '\'' +
+                '}';
+    }
 }
