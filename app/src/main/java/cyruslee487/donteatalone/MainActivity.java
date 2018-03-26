@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity
     private static final String SELECT_DATE = "select_date";
     private static final String SELECT_TIME = "select_time";
     private static final String IMAGE_NAME = "image_name";
+    private static final String IMAGE_ADDRESS = "image_address";
     private static final int RC_SIGN_IN = 1001;
     private static final int ERROR_DIALOG_REQUEST = 9001;
     private static final int PERMISSION_REQUEST_CODE = 5001;
@@ -199,9 +200,11 @@ public class MainActivity extends AppCompatActivity
 
     private void getIntentFromRestaurantInfoActivity(){
         if(getIntent().hasExtra(IMAGE_NAME)
+                && getIntent().hasExtra(IMAGE_ADDRESS)
                 && getIntent().hasExtra(SELECT_DATE)
                 && getIntent().hasExtra(SELECT_TIME)){
             String name = getIntent().getStringExtra(IMAGE_NAME);
+            String address = getIntent().getStringExtra(IMAGE_ADDRESS);
             String date = getIntent().getStringExtra(SELECT_DATE);
             String time = getIntent().getStringExtra(SELECT_TIME);
 
@@ -210,10 +213,10 @@ public class MainActivity extends AppCompatActivity
                 mUsername = user.getDisplayName();
             }
 
-            mDatabaseReference.push().setValue(new Event(mUsername, name, null, date, time));
+            mDatabaseReference.push().setValue(new Event(mUsername, name, address, date, time));
 
             Log.d(TAG, "onCreate: Set value: " + mUsername + "___"
-                    + name + "___" + date + "___" + time);
+                    + name + "___" + address + "___" + date + "___" + time);
         }
     }
 

@@ -211,6 +211,7 @@ public class RestaurantInfoActivity extends FragmentActivity implements OnMapRea
         Intent intent = new Intent(RestaurantInfoActivity.this, MainActivity.class);
         intent.putExtra("select_date", date);
         intent.putExtra("select_time", time);
+        intent.putExtra(IMAGE_ADDRESS, mImageAddress);
         intent.putExtra(IMAGE_NAME, mImageName);
         startActivity(intent);
         finish();
