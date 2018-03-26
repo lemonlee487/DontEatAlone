@@ -4,27 +4,64 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="10dp">
+    android:padding="8dp"
+    android:id="@+id/linear_layout_rest_info">
 
-    <ImageView
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://shemas.android.com/apk/res-auto"
+        xmlns:tools="http://cschemas.android.com/tools"
+        android:id="@+id/map_rest_info"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:id="@+id/image_info_activity"
-        android:src="@mipmap/ic_launcher"
-        android:layout_marginBottom="10dp"/>
+        android:layout_height="match_parent"
+        tools:context="cyruslee487.donteatalone.MapsActivity"
+        android:layout_weight="1"/>
 
-    <TextView
-        android:id="@+id/textview_info_activity"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Hello"
-        android:textSize="23dp" />
 
-    <Button
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/Eat_here"
-        android:onClick="createEvent"/>
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:id="@+id/relative_rest_info"
+        android:padding="8dp">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:id="@+id/image_view_rest_info"
+            android:src="@mipmap/ic_launcher"
+            android:onClick="toMapActivity"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/rest_name_rest_info"
+            android:text="Restaurant Name"
+            android:textSize="30dp"
+            android:layout_toRightOf="@+id/image_view_rest_info"
+            android:layout_marginLeft="18dp"
+            android:layout_marginTop="25dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/rest_address_rest_info"
+            android:text="@string/McDonald_Url"
+            android:textSize="20dp"
+            android:layout_marginTop="100dp"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/create_event_btn_rest_info"
+            android:text="Create Event"
+            android:layout_toRightOf="@+id/image_view_rest_info"
+            android:layout_marginLeft="145dp"
+            android:layout_marginTop="190dp"
+            android:onClick="createEvent"/>
+
+    </RelativeLayout>
+
 
 
 

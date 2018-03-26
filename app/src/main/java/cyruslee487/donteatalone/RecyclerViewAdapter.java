@@ -21,9 +21,12 @@ import java.util.ArrayList;
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.mViewHolder> {
 
     //Constants
-    private String TAG = "DB";
-    private String IMAGE_URL = "image_url";
-    private String IMAGE_NAME = "image_name";
+    private static final String TAG = "DB";
+    private static final String IMAGE_URL = "image_url";
+    private static final String IMAGE_NAME = "image_name";
+    private static final String IMAGE_ADDRESS = "image_address";
+    private static final String LATITUDE = "lat";
+    private static final String LONGITUDE = "lng";
 
     //vars
     private ArrayList<Restaurant> mRestaurants = new ArrayList<>();
@@ -53,6 +56,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 .into(holder.list_item_image_view);
 
         holder.list_item_text_view.setText(restaurant.getName());
+        holder.address_text_view.setText(restaurant.getAddress());
+
 
         holder.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,6 +67,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
                 intent.putExtra(IMAGE_URL, restaurant.getImageUrl());
                 intent.putExtra(IMAGE_NAME, restaurant.getName());
+                intent.putExtra(IMAGE_ADDRESS, restaurant.getAddress());
+                intent.putExtra(LATITUDE, restaurant.getLatitude());
+                intent.putExtra(LONGITUDE, restaurant.getLongitude());
                 mContext.startActivity(intent);
             }
         });
@@ -75,6 +83,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     public class mViewHolder extends RecyclerView.ViewHolder{
         TextView list_item_text_view;
+        TextView address_text_view;
         ImageView list_item_image_view;
         RelativeLayout parentLayout;
 
@@ -82,6 +91,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         public mViewHolder(View itemView) {
             super(itemView);
             list_item_text_view = itemView.findViewById(R.id.textview_list_item);
+            address_text_view = itemView.findViewById(R.id.textview2_list_item);
             list_item_image_view = itemView.findViewById(R.id.image_list_item);
             parentLayout = itemView.findViewById(R.id.relative_list_item);
 

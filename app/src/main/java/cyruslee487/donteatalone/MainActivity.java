@@ -1,10 +1,15 @@
 package cyruslee487.donteatalone;
 
+import android.*;
+import android.Manifest;
+import android.app.Dialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -21,6 +26,9 @@ import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -45,12 +53,15 @@ public class MainActivity extends AppCompatActivity
     private static final String SELECT_TIME = "select_time";
     private static final String IMAGE_NAME = "image_name";
     private static final int RC_SIGN_IN = 1001;
+    private static final int ERROR_DIALOG_REQUEST = 9001;
+    private static final int PERMISSION_REQUEST_CODE = 5001;
 
     //vars
     //private ArrayList<String> mImageNames = new ArrayList<>();
     //private ArrayList<String> mImagesUrls = new ArrayList<>();
     private ArrayList<Restaurant> mRestaurants = new ArrayList<>();
     private String mUsername;
+    private boolean mLocationPermissionGranted;
 
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
@@ -80,6 +91,10 @@ public class MainActivity extends AppCompatActivity
         changeNavMenuItemName(navigationView);
         navigationView.setNavigationItemSelectedListener(this);
 
+        if(isServiceOk()){
+            getPermission();
+        }
+
         initBitmaps();
 
         mUsername = ANONYMOUS;
@@ -103,6 +118,69 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         };
+    }
+
+    public boolean isServiceOk(){
+        Log.d(TAG, "isServiceOk: Checking google service version");
+
+        int available = GoogleApiAvailability.getInstance()
+                .isGooglePlayServicesAvailable(MainActivity.this);
+        if(available == ConnectionResult.SUCCESS){
+            Log.d(TAG, "isServiceOk: Google play service is working");
+            return true;
+        } else if(GoogleApiAvailability.getInstance().isUserResolvableError(available)){
+            Log.d(TAG, "isServiceOk: an error occured");
+            Dialog dialog = GoogleApiAvailability.getInstance()
+                    .getErrorDialog(MainActivity.this, available, ERROR_DIALOG_REQUEST);
+        } else {
+            Log.d(TAG, "isServiceOk: No map request");
+        }
+        return false;
+    }
+
+    private void getPermission(){
+        Log.d(TAG, "init: Getting permission");
+        if(checkLocationPermission()){
+            Log.d(TAG, "init: Permission granted");
+        } else {
+            Log.d(TAG, "init: Requesting permission");
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    android.Manifest.permission.READ_CONTACTS)) {
+                Toast.makeText(this, "Please allow the permission", Toast.LENGTH_SHORT).show();
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        PERMISSION_REQUEST_CODE);
+            }
+        }
+    }
+
+    private boolean checkLocationPermission() {
+        int permissioinState = ActivityCompat.checkSelfPermission(
+                this, android.Manifest.permission.ACCESS_FINE_LOCATION);
+        if(permissioinState == PackageManager.PERMISSION_GRANTED)
+            return true;
+        else
+            return false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        mLocationPermissionGranted = false;
+
+        switch(requestCode){
+            case PERMISSION_REQUEST_CODE:
+                if(grantResults.length > 0){
+                    for(int i = 0; i < grantResults.length; i++){
+                        if(grantResults[i] != PackageManager.PERMISSION_GRANTED){
+                            mLocationPermissionGranted = false;
+                            return;
+                        }
+                    }
+                    mLocationPermissionGranted = true;
+                    //init map here
+                }
+        }
     }
 
     @Override
@@ -198,29 +276,75 @@ public class MainActivity extends AppCompatActivity
     private void initBitmaps(){
         //Log.d(TAG, "init: perparing images");
 
-        insertImageArray(getResources().getString(R.string.McDonald)
-                ,getResources().getString(R.string.McDonald_Url));
+        insertRestaurantArray(getResources().getString(R.string.McDonald)
+                ,getResources().getString(R.string.McDonald_01_address)
+                ,getResources().getString(R.string.McDonald_Url)
+                ,50.663558, -120.350930);
 
-        insertImageArray(getResources().getString(R.string.KFC)
-                ,getResources().getString(R.string.KFC_Url));
+        insertRestaurantArray(getResources().getString(R.string.McDonald)
+                ,getResources().getString(R.string.McDonald_02_address)
+                ,getResources().getString(R.string.McDonald_Url)
+                ,50.665622, -120.369793);
 
-        insertImageArray(getResources().getString(R.string.Wendy)
-                ,getResources().getString(R.string.Wendy_Url));
+        insertRestaurantArray(getResources().getString(R.string.McDonald)
+                ,getResources().getString(R.string.McDonald_03_address)
+                ,getResources().getString(R.string.McDonald_Url)
+                ,50.675703, -120.334223);
 
-        insertImageArray(getResources().getString(R.string.RR)
-                ,getResources().getString(R.string.RR_Url));
+        insertRestaurantArray(getResources().getString(R.string.WhiteSpot)
+                ,getResources().getString(R.string.White_Spot_01_address)
+                ,getResources().getString(R.string.WhiteSpot_Url)
+                ,50.663599, -120.352802);
 
-        insertImageArray(getResources().getString(R.string.WhiteSpot)
-                ,getResources().getString(R.string.WhiteSpot_Url));
+        insertRestaurantArray(getResources().getString(R.string.WhiteSpot)
+                ,getResources().getString(R.string.White_Spot_02_address)
+                ,getResources().getString(R.string.WhiteSpot_Url)
+                ,50.696459, -120.361058);
 
-        insertImageArray(getResources().getString(R.string.PizzaHut)
-                ,getResources().getString(R.string.PizzaHut_Url));
+        insertRestaurantArray(getResources().getString(R.string.RR)
+                ,getResources().getString(R.string.Red_Robin_01_address)
+                ,getResources().getString(R.string.RR_Url)
+                ,50.666638, -120.355216);
 
-        insertImageArray(getResources().getString(R.string.Domino)
-                ,getResources().getString(R.string.Domino_Url));
+        insertRestaurantArray(getResources().getString(R.string.Domino)
+                ,getResources().getString(R.string.Domino_01_address)
+                ,getResources().getString(R.string.Domino_Url)
+                ,50.671228, -120.354309);
 
-        insertImageArray(getResources().getString(R.string.Boston)
-                ,getResources().getString(R.string.Boston_Url));
+        insertRestaurantArray(getResources().getString(R.string.PizzaHut)
+                ,getResources().getString(R.string.PizzaHut_01_address)
+                ,getResources().getString(R.string.PizzaHut_Url)
+                ,50.667309, -120.355510);
+
+        insertRestaurantArray(getResources().getString(R.string.PizzaHut)
+                ,getResources().getString(R.string.PizzaHut_02_address)
+                ,getResources().getString(R.string.PizzaHut_Url)
+                ,50.700848, -120.360063);
+
+        insertRestaurantArray(getResources().getString(R.string.Wendy)
+                ,getResources().getString(R.string.Wendy_01_address)
+                ,getResources().getString(R.string.Wendy_Url)
+                ,50.669688, -120.354922);
+
+        insertRestaurantArray(getResources().getString(R.string.Wendy)
+                ,getResources().getString(R.string.Wendy_02_address)
+                ,getResources().getString(R.string.Wendy_Url)
+                ,50.677869, -120.289915);
+
+        insertRestaurantArray(getResources().getString(R.string.Wendy)
+                ,getResources().getString(R.string.Wendy_03_address)
+                ,getResources().getString(R.string.Wendy_Url)
+                ,50.699066, -120.363341);
+
+        insertRestaurantArray(getResources().getString(R.string.Boston)
+                ,getResources().getString(R.string.Boston_01_address)
+                ,getResources().getString(R.string.Boston_Url)
+                ,50.663752, -120.351726);
+
+        insertRestaurantArray(getResources().getString(R.string.KFC)
+                ,getResources().getString(R.string.KFC_01_address)
+                ,getResources().getString(R.string.KFC_Url)
+                ,50.663173, -120.351940);
 
         initRecyclerView();
     }
@@ -234,8 +358,9 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void insertImageArray(String image_name, String image_url){
-        Restaurant restaurant = new Restaurant(image_name, image_url);
+    private void insertRestaurantArray(String rest_name, String rest_address, String image_url,
+                                       double latitude, double longitude){
+        Restaurant restaurant = new Restaurant(rest_name, rest_address, image_url, latitude, longitude);
         mRestaurants.add(restaurant);
     }
 
@@ -251,24 +376,16 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Log.d(TAG, "onOptionsItemSelected: sign out");
-            //AuthUI.getInstance().signOut(this);
         }
-
         return super.onOptionsItemSelected(item);
     }
 
