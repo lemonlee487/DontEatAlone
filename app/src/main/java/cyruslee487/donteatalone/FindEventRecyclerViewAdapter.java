@@ -1,5 +1,6 @@
 package cyruslee487.donteatalone;
 
+import android.app.DialogFragment;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -49,6 +50,13 @@ public class FindEventRecyclerViewAdapter extends RecyclerView.Adapter<FindEvent
         holder.restaurant_address_find_event.setText(event.getLocation());
         holder.date_find_event.setText(event.getDate());
         holder.time_find_event.setText(event.getTime());
+
+        holder.relative_find_event.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
     }
 
     @Override
@@ -72,7 +80,7 @@ public class FindEventRecyclerViewAdapter extends RecyclerView.Adapter<FindEvent
             date_find_event = view.findViewById(R.id.date_find_event);
             time_find_event = view.findViewById(R.id.time_find_event);
             image_find_event = view.findViewById(R.id.image_view_find_event);
-            relative_find_event = view.findViewById(R.id.relative_list_item);
+            relative_find_event = view.findViewById(R.id.relative_find_event);
         }
     }
 

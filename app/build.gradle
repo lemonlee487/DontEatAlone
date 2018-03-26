@@ -48,6 +48,10 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:12.0.0'
     implementation 'com.google.android.gms:play-services-auth:12.0.0'
 
+    //Firebase FCM
+    implementation 'com.google.firebase:firebase-messaging:12.0.0'
+
+
     //Google Map
     implementation 'com.google.android.gms:play-services:12.0.0'
 
