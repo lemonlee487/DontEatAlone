@@ -443,13 +443,14 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_camera) {
 
-            Log.d(TAG, "onNavigationItemSelected: camera");
         } else if (id == R.id.nav_gallery) {
-            Log.d(TAG, "onNavigationItemSelected: gallery");
             Intent intent = new Intent(this, FindEventActivity.class);
             startActivity(intent);
+
         } else if (id == R.id.nav_slideshow) {
-            Log.d(TAG, "onNavigationItemSelected: slideshow");
+            Intent intent = new Intent(this, MyEventActivity.class);
+            startActivity(intent);
+
         } else if (id == R.id.nav_manage) {
             Log.d(TAG, "onNavigationItemSelected: manage");
         } else if (id == R.id.nav_share) {

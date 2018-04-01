@@ -62,6 +62,7 @@
     <string name="title_activity_find_event">FindEventActivity</string>
     <string name="title_activity_maps">Map</string>
     <string name="default_notification_channel_id">default_notification_channel_id</string>
-
+    <string name="title_activity_my_event">MyEventActivity</string>
+    <string name="upcoming_event">Next Upcoming Event</string>
 
 </resources>

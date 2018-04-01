@@ -1,14 +1,30 @@
 package cyruslee487.donteatalone;
 
-/**
- * Created by cyrus on 2018-03-23.
- */
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+
+@Entity
 public class Event {
+    @PrimaryKey(autoGenerate = true)
+            private int eid;
 
-    String restaurant_name, username;
-    String location;
-    String date, time;
+    @ColumnInfo(name = "user_name")
+            private String username;
+
+    @ColumnInfo(name = "restaurant_name")
+            private String restaurant_name;
+
+    @ColumnInfo(name = "location")
+            private String location;
+
+    @ColumnInfo(name = "date")
+            private String date;
+
+    @ColumnInfo(name = "time")
+            private String time;
+
 
     public Event(){
     }
@@ -20,6 +36,14 @@ public class Event {
         this.location = location;
         this.date = date;
         this.time = time;
+    }
+
+    public int getEid() {
+        return eid;
+    }
+
+    public void setEid(int eid) {
+        this.eid = eid;
     }
 
     public String getUsername() {

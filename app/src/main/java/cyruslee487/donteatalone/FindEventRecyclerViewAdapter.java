@@ -2,6 +2,7 @@ package cyruslee487.donteatalone;
 
 import android.app.DialogFragment;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,12 +19,14 @@ import java.util.List;
 
 public class FindEventRecyclerViewAdapter extends RecyclerView.Adapter<FindEventRecyclerViewAdapter.mFEViewHolder>{
 
-    private Context mContext;
-    private List<Event> mEventList = new ArrayList<>();
+    private static final String TAG = "DB";
 
-    public FindEventRecyclerViewAdapter(Context mContext, List<Event> mEventList) {
+    private Context mContext;
+    private List<Event> mEventsFromFirebase = new ArrayList<>();
+
+    public FindEventRecyclerViewAdapter(Context mContext, List<Event> mEventsFromFirebase) {
         this.mContext = mContext;
-        this.mEventList = mEventList;
+        this.mEventsFromFirebase = mEventsFromFirebase;
     }
 
     @Override
@@ -35,7 +38,7 @@ public class FindEventRecyclerViewAdapter extends RecyclerView.Adapter<FindEvent
 
     @Override
     public void onBindViewHolder(mFEViewHolder holder, int position) {
-        final Event event = mEventList.get(position);
+        final Event event = mEventsFromFirebase.get(position);
 
         String url = getImageUrl(event.getRestaurant_name());
         if(!url.equals("nothing")){
@@ -54,14 +57,29 @@ public class FindEventRecyclerViewAdapter extends RecyclerView.Adapter<FindEvent
         holder.relative_find_event.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                new insertMyEventAsync(mContext).execute(event);
             }
         });
     }
 
+    private class insertMyEventAsync extends AsyncTask<Event, Void, Void>{
+        private EventDatabase eventDatabase;
+
+        private insertMyEventAsync(Context mContext){
+            eventDatabase = EventDatabase.getDatabase(mContext);
+        }
+
+        @Override
+        protected Void doInBackground(Event... events) {
+            eventDatabase.eventDao().insert(events);
+            Log.d(TAG, "doInBackground: FindEventRecyclerViewAdapter: add event to my event");
+            return null;
+        }
+    }
+
     @Override
     public int getItemCount() {
-        return mEventList.size();
+        return mEventsFromFirebase.size();
     }
 
     public class mFEViewHolder extends RecyclerView.ViewHolder{
@@ -83,7 +101,6 @@ public class FindEventRecyclerViewAdapter extends RecyclerView.Adapter<FindEvent
             relative_find_event = view.findViewById(R.id.relative_find_event);
         }
     }
-
 
     private String getImageUrl(String name){
         switch(name){
