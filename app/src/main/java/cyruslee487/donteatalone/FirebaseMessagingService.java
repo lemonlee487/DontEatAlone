@@ -14,6 +14,8 @@ import android.util.Log;
 
 import com.google.firebase.messaging.RemoteMessage;
 
+import cyruslee487.donteatalone.Activity.MainActivity;
+
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService{
 
     private static final String TAG = "DB";

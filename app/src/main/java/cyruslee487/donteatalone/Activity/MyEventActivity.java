@@ -1,6 +1,8 @@
-package cyruslee487.donteatalone;
+package cyruslee487.donteatalone.Activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -16,37 +18,33 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class FindEventActivity extends AppCompatActivity
+import cyruslee487.donteatalone.EventRoomDatabase.Event;
+import cyruslee487.donteatalone.EventRoomDatabase.EventDatabase;
+import cyruslee487.donteatalone.R;
+import cyruslee487.donteatalone.RecyclerViewAdapter.FindEventRecyclerViewAdapter;
+
+public class MyEventActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "DB";
 
-    private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference mDatabaseReference;
-    private ChildEventListener mChildEventListener;
-    private RecyclerView recyclerView;
-    private FindEventRecyclerViewAdapter mAdapter;
-    private ArrayList<Event> mEventsFromFirebase = new ArrayList<>();
+
+    private List<Event> mEventFromRoomDatabase = new ArrayList<>();
+    private TextView usernameTV, restNameTV, addressTV, dateTV, timeTV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_find_event);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        setContentView(R.layout.activity_my_event);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -55,46 +53,67 @@ public class FindEventActivity extends AppCompatActivity
             }
         });
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         changeNavMenuItemName(navigationView);
         navigationView.setNavigationItemSelectedListener(this);
 
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mDatabaseReference = mFirebaseDatabase.getReference().child("events");
+        usernameTV = findViewById(R.id.username_my_event);
+        restNameTV = findViewById(R.id.restaurant_name_my_event);
+        addressTV = findViewById(R.id.restaurant_address_my_event);
+        dateTV = findViewById(R.id.date_my_event);
+        timeTV = findViewById(R.id.time_my_event);
 
-        initRecyclerView();
+        getEventFromRoomDatabase();
+    }
+
+    private void getEventFromRoomDatabase(){
+        new getEventFromRoomDatabase(this).execute();
+    }
+
+    private class getEventFromRoomDatabase extends AsyncTask<Void, Void, Void> {
+        private EventDatabase eventDatabase;
+
+        private getEventFromRoomDatabase(Context mContext){
+            eventDatabase = EventDatabase.getDatabase(mContext);
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            mEventFromRoomDatabase = eventDatabase.eventDao().getAll();
+            setUpComingEvent();
+            return null;
+        }
+    }
+
+    private void setUpComingEvent(){
+        Event event = mEventFromRoomDatabase.get(0);
+        if(event != null){
+            usernameTV.setText(event.getUsername());
+            restNameTV.setText(event.getRestaurant_name());
+            addressTV.setText(event.getLocation());
+            dateTV.setText(event.getDate());
+            timeTV.setText(event.getTime());
+            Log.d(TAG, "setUpComingEvent: Set");
+
+            initRecyclerView();
+        }else{
+            Log.e(TAG, "setUpComingEvent: Event from room is null");
+        }
     }
 
     private void initRecyclerView(){
-        Log.d(TAG, "initRecyclerView: FindEventActivity");
-        recyclerView = findViewById(R.id.recyclerview_find_event);
+        Log.d(TAG, "initRecyclerView: ok");
+        RecyclerView recyclerView = findViewById(R.id.recyclerview_my_event);
+        FindEventRecyclerViewAdapter mAdapter =
+                new FindEventRecyclerViewAdapter(this, mEventFromRoomDatabase);
+        recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        mDatabaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                mEventsFromFirebase.clear();
-                for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
-                    Event event = postSnapshot.getValue(Event.class);
-                    mEventsFromFirebase.add(event);
-                    Log.d(TAG, "onDataChange: IN Adapter");
-
-                    mAdapter = new FindEventRecyclerViewAdapter(FindEventActivity.this, mEventsFromFirebase);
-                    recyclerView.setAdapter(mAdapter);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d(TAG, "onCancelled: Read failed: " + databaseError.getMessage());
-            }
-        });
     }
 
     @Override
@@ -110,7 +129,7 @@ public class FindEventActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.find_event, menu);
+        getMenuInflater().inflate(R.menu.my_event, menu);
         return true;
     }
 
@@ -136,12 +155,15 @@ public class FindEventActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-            Intent intent = new Intent(FindEventActivity.this, MainActivity.class);
+            Intent intent = new Intent(this, MainActivity.class);
             intent.setFlags(intent.getFlags()|Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             finish();
         } else if (id == R.id.nav_gallery) {
-
+            Intent intent = new Intent(this, FindEventActivity.class);
+            intent.setFlags(intent.getFlags()|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {

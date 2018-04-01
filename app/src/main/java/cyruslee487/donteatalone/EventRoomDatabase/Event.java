@@ -1,4 +1,4 @@
-package cyruslee487.donteatalone;
+package cyruslee487.donteatalone.EventRoomDatabase;
 
 
 import android.arch.persistence.room.ColumnInfo;

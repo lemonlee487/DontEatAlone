@@ -1,6 +1,5 @@
-package cyruslee487.donteatalone;
+package cyruslee487.donteatalone.RecyclerViewAdapter;
 
-import android.app.DialogFragment;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +15,10 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cyruslee487.donteatalone.EventRoomDatabase.Event;
+import cyruslee487.donteatalone.EventRoomDatabase.EventDatabase;
+import cyruslee487.donteatalone.R;
 
 public class FindEventRecyclerViewAdapter extends RecyclerView.Adapter<FindEventRecyclerViewAdapter.mFEViewHolder>{
 

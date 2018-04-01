@@ -1,8 +1,6 @@
-package cyruslee487.donteatalone;
+package cyruslee487.donteatalone.Activity;
 
-import android.*;
 import android.app.DatePickerDialog;
-import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -10,13 +8,11 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
@@ -38,6 +34,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 import java.util.Calendar;
+
+import cyruslee487.donteatalone.R;
 
 /**
  * Created by cyrus on 2018-03-22.
@@ -73,7 +71,7 @@ public class RestaurantInfoActivity extends FragmentActivity implements OnMapRea
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.restaurant_info_activity);
+        setContentView(cyruslee487.donteatalone.R.layout.restaurant_info_activity);
 
         mContext = getApplicationContext();
 

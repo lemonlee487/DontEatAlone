@@ -1,6 +1,5 @@
-package cyruslee487.donteatalone;
+package cyruslee487.donteatalone.RecyclerViewAdapter;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -8,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -16,6 +14,10 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
+
+import cyruslee487.donteatalone.R;
+import cyruslee487.donteatalone.Restaurant;
+import cyruslee487.donteatalone.Activity.RestaurantInfoActivity;
 
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.mViewHolder> {
