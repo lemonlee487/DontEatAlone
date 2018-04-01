@@ -44,6 +44,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,6 +64,7 @@ public class MainActivity extends AppCompatActivity
     private static final String SELECT_TIME = "select_time";
     private static final String IMAGE_NAME = "image_name";
     private static final String IMAGE_ADDRESS = "image_address";
+    private static final String FILENAME = "FIREBASE_INSTANCE_ID.txt";
     private static final int RC_SIGN_IN = 1001;
     private static final int ERROR_DIALOG_REQUEST = 9001;
     private static final int PERMISSION_REQUEST_CODE = 5001;
@@ -68,6 +74,7 @@ public class MainActivity extends AppCompatActivity
     //private ArrayList<String> mImagesUrls = new ArrayList<>();
     private ArrayList<Restaurant> mRestaurants = new ArrayList<>();
     private String mUsername;
+    private String firebaseInstanceId;
     private boolean mLocationPermissionGranted;
 
     private FirebaseDatabase mFirebaseDatabase;
@@ -98,8 +105,7 @@ public class MainActivity extends AppCompatActivity
         changeNavMenuItemName(navigationView);
         navigationView.setNavigationItemSelectedListener(this);
 
-        //Firebase message testing
-        //FirebaseMessaging.getInstance().subscribeToTopic("DONT_EAT_ALONE");
+        getIdFromFile(this);
 
         if(isServiceOk()){
             getPermission();
@@ -377,6 +383,31 @@ public class MainActivity extends AppCompatActivity
                                        double latitude, double longitude){
         Restaurant restaurant = new Restaurant(rest_name, rest_address, image_url, latitude, longitude);
         mRestaurants.add(restaurant);
+    }
+
+    //Get FirebaseInstanceId from file
+    private void getIdFromFile(Context context){
+        try {
+            InputStream inputStream = context.openFileInput(FILENAME);
+            if(inputStream != null){
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                String receiveString = "";
+                StringBuilder stringBuilder = new StringBuilder();
+
+                while((receiveString = bufferedReader.readLine()) != null) {
+                    stringBuilder.append(receiveString);
+                }
+
+                inputStream.close();
+                firebaseInstanceId = stringBuilder.toString();
+                Log.d(TAG, "getIdFromFile: " + firebaseInstanceId);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
