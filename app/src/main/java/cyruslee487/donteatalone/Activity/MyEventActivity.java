@@ -19,6 +19,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,18 +93,26 @@ public class MyEventActivity extends AppCompatActivity
     }
 
     private void setUpComingEvent(){
-        Event event = mEventFromRoomDatabase.get(0);
-        if(event != null){
-            usernameTV.setText(event.getUsername());
-            restNameTV.setText(event.getRestaurant_name());
-            addressTV.setText(event.getLocation());
-            dateTV.setText(event.getDate());
-            timeTV.setText(event.getTime());
-            Log.d(TAG, "setUpComingEvent: Set");
+        if(!mEventFromRoomDatabase.isEmpty()){
+            Event event = mEventFromRoomDatabase.get(0);
+            if (event != null) {
+                usernameTV.setText(event.getUsername());
+                restNameTV.setText(event.getRestaurant_name());
+                addressTV.setText(event.getLocation());
+                dateTV.setText(event.getDate());
+                timeTV.setText(event.getTime());
+                Log.d(TAG, "setUpComingEvent: Set");
 
-            initRecyclerView();
+                initRecyclerView();
+            } else {
+                Log.e(TAG, "setUpComingEvent: Event from room is null");
+            }
         }else{
-            Log.e(TAG, "setUpComingEvent: Event from room is null");
+            usernameTV.setText("NO");
+            restNameTV.setText("EVENT");
+            addressTV.setText("FOR");
+            dateTV.setText("YOU");
+            timeTV.setText("");
         }
     }
 
