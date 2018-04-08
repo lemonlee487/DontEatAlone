@@ -31,7 +31,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private static final String LONGITUDE = "lng";
 
     //vars
-    private ArrayList<Restaurant> mRestaurants = new ArrayList<>();
+    private ArrayList<Restaurant> mRestaurants;
     private Context mContext;
 
     public RecyclerViewAdapter(Context mContext, ArrayList<Restaurant> mRestaurants) {

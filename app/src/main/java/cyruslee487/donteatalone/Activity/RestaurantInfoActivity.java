@@ -37,10 +37,6 @@ import java.util.Calendar;
 
 import cyruslee487.donteatalone.R;
 
-/**
- * Created by cyrus on 2018-03-22.
- */
-
 public class RestaurantInfoActivity extends FragmentActivity implements OnMapReadyCallback {
 
     //Constants

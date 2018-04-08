@@ -2,7 +2,6 @@ package cyruslee487.donteatalone.Activity;
 
 import android.Manifest;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -21,6 +20,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.common.ConnectionResult;
@@ -31,19 +37,20 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import cyruslee487.donteatalone.EventRoomDatabase.Event;
 import cyruslee487.donteatalone.R;
 import cyruslee487.donteatalone.RecyclerViewAdapter.RecyclerViewAdapter;
 import cyruslee487.donteatalone.Restaurant;
+import cyruslee487.donteatalone.SharedPrefManager;
 
 
 public class MainActivity extends AppCompatActivity
@@ -55,17 +62,13 @@ public class MainActivity extends AppCompatActivity
     private static final String SELECT_TIME = "select_time";
     private static final String IMAGE_NAME = "image_name";
     private static final String IMAGE_ADDRESS = "image_address";
-    private static final String FILENAME = "FIREBASE_INSTANCE_ID.txt";
+    private static final String URL_STORE_TOKEN = "http://10.50.109.25/fcm/register.php";
     private static final int RC_SIGN_IN = 1001;
     private static final int ERROR_DIALOG_REQUEST = 9001;
     private static final int PERMISSION_REQUEST_CODE = 5001;
 
-    //vars
-    //private ArrayList<String> mImageNames = new ArrayList<>();
-    //private ArrayList<String> mImagesUrls = new ArrayList<>();
     private ArrayList<Restaurant> mRestaurants = new ArrayList<>();
     private String mUsername;
-    private String firebaseInstanceId;
     private boolean mLocationPermissionGranted;
 
     private FirebaseDatabase mFirebaseDatabase;
@@ -83,24 +86,24 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         changeNavMenuItemName(navigationView);
         navigationView.setNavigationItemSelectedListener(this);
-
-        getIdFromFile(this);
 
         if(isServiceOk()){
             getPermission();
         }
+
+        sendTokenToServer();
 
         initBitmaps();
 
@@ -376,29 +379,44 @@ public class MainActivity extends AppCompatActivity
         mRestaurants.add(restaurant);
     }
 
-    //Get FirebaseInstanceId from file
-    private void getIdFromFile(Context context){
-        try {
-            InputStream inputStream = context.openFileInput(FILENAME);
-            if(inputStream != null){
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                String receiveString = "";
-                StringBuilder stringBuilder = new StringBuilder();
+    //Send Token to Server Using Volley
+    private void sendTokenToServer() {
 
-                while((receiveString = bufferedReader.readLine()) != null) {
-                    stringBuilder.append(receiveString);
-                }
+        final String token = SharedPrefManager.getInstance(this).getDeviceToken();
 
-                inputStream.close();
-                firebaseInstanceId = stringBuilder.toString();
-                Log.d(TAG, "getIdFromFile: " + firebaseInstanceId);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (token == null) {
+            Log.d(TAG, "sendTokenToServer: Token not generated");
+            return;
         }
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, URL_STORE_TOKEN,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject obj = new JSONObject(response);
+                            Log.d(TAG, "onResponse: " + obj.getString("message")    );
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, "onErrorResponse: " + error.toString());
+                    }
+                }) {
+
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("token", token);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
     }
 
     @Override
