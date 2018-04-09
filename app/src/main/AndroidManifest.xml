@@ -13,6 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyC_xst7LNy8zXtaqye5HE9aSb7eahTxwKg" />
@@ -22,6 +23,8 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorAccent" />
+
+
 
         <activity
             android:name=".Activity.MainActivity"
@@ -44,6 +47,13 @@
             android:name=".Activity.MapsActivity"
             android:label="@string/title_activity_maps" />
 
+        <activity
+            android:name=".Activity.MyEventActivity"
+            android:label="@string/title_activity_my_event"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+
+
         <service android:name=".FirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -55,10 +65,7 @@
             </intent-filter>
         </service>
 
-        <activity
-            android:name=".Activity.MyEventActivity"
-            android:label="@string/title_activity_my_event"
-            android:theme="@style/AppTheme.NoActionBar"/>
+
     </application>
 
 </manifest>

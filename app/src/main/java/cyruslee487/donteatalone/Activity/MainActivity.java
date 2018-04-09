@@ -69,7 +69,6 @@ public class MainActivity extends AppCompatActivity
 
     private ArrayList<Restaurant> mRestaurants = new ArrayList<>();
     private String mUsername;
-    private boolean mLocationPermissionGranted;
 
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
@@ -103,7 +102,12 @@ public class MainActivity extends AppCompatActivity
             getPermission();
         }
 
-        sendTokenToServer();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user != null) {
+            String email = user.getEmail();
+            sendTokenToServer(email);
+        }else{
+        }
 
         initBitmaps();
 
@@ -120,10 +124,8 @@ public class MainActivity extends AppCompatActivity
                 FirebaseUser mUser = firebaseAuth.getCurrentUser();
                 if(mUser != null){
                     onSignedIn(mUser.getDisplayName());
-                    Log.d(TAG, "onAuthStateChanged: User signed in");
                 } else {
                     onSignOutCleanUp();
-                    Log.d(TAG, "onAuthStateChanged: User signed out");
                     launchSignInIntent();
                 }
             }
@@ -133,29 +135,27 @@ public class MainActivity extends AppCompatActivity
 
     //Google Service Permission Check
     public boolean isServiceOk(){
-        Log.d(TAG, "isServiceOk: Checking google service version");
-
         int available = GoogleApiAvailability.getInstance()
                 .isGooglePlayServicesAvailable(MainActivity.this);
         if(available == ConnectionResult.SUCCESS){
-            Log.d(TAG, "isServiceOk: Google play service is working");
+            //Log.d(TAG, "isServiceOk: Google play service is working");
             return true;
         } else if(GoogleApiAvailability.getInstance().isUserResolvableError(available)){
             Log.d(TAG, "isServiceOk: an error occured");
             Dialog dialog = GoogleApiAvailability.getInstance()
                     .getErrorDialog(MainActivity.this, available, ERROR_DIALOG_REQUEST);
         } else {
-            Log.d(TAG, "isServiceOk: No map request");
+            //Log.d(TAG, "isServiceOk: No map request");
         }
         return false;
     }
 
     private void getPermission(){
-        Log.d(TAG, "init: Getting permission");
+        //Log.d(TAG, "init: Getting permission");
         if(checkLocationPermission()){
-            Log.d(TAG, "init: Permission granted");
+            //Log.d(TAG, "init: Permission granted");
         } else {
-            Log.d(TAG, "init: Requesting permission");
+            //Log.d(TAG, "init: Requesting permission");
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     android.Manifest.permission.READ_CONTACTS)) {
                 Toast.makeText(this, "Please allow the permission", Toast.LENGTH_SHORT).show();
@@ -178,18 +178,14 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        mLocationPermissionGranted = false;
-
         switch(requestCode){
             case PERMISSION_REQUEST_CODE:
                 if(grantResults.length > 0){
                     for(int i = 0; i < grantResults.length; i++){
                         if(grantResults[i] != PackageManager.PERMISSION_GRANTED){
-                            mLocationPermissionGranted = false;
                             return;
                         }
                     }
-                    mLocationPermissionGranted = true;
                     //init map here
                 }
         }
@@ -380,7 +376,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     //Send Token to Server Using Volley
-    private void sendTokenToServer() {
+    private void sendTokenToServer(final String email) {
 
         final String token = SharedPrefManager.getInstance(this).getDeviceToken();
 
@@ -412,6 +408,8 @@ public class MainActivity extends AppCompatActivity
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
                 params.put("token", token);
+                params.put("email", email);
+
                 return params;
             }
         };

@@ -26,7 +26,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         if(remoteMessage.getData().size() > 0){
-            Log.d(TAG, "onMessageReceived: getData() => " + remoteMessage.getData());
+            Log.d(TAG, "onMessageReceived: getData() => " + remoteMessage.getData().get("message"));
         }
         
         if(remoteMessage.getNotification() != null){
