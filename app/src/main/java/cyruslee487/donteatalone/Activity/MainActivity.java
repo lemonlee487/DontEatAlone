@@ -48,7 +48,7 @@ import java.util.Map;
 
 import cyruslee487.donteatalone.EventRoomDatabase.Event;
 import cyruslee487.donteatalone.R;
-import cyruslee487.donteatalone.RecyclerViewAdapter.RecyclerViewAdapter;
+import cyruslee487.donteatalone.RecyclerViewAdapter.MainMenuRecyclerViewAdapter;
 import cyruslee487.donteatalone.Restaurant;
 import cyruslee487.donteatalone.SharedPrefManager;
 
@@ -362,8 +362,8 @@ public class MainActivity extends AppCompatActivity
 
     private void initRecyclerView(){
         RecyclerView recyclerView = findViewById(R.id.recyclerview_content_main);
-        RecyclerViewAdapter mAdapter =
-                new RecyclerViewAdapter(this, mRestaurants);
+        MainMenuRecyclerViewAdapter mAdapter =
+                new MainMenuRecyclerViewAdapter(this, mRestaurants);
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 

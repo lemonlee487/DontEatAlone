@@ -20,7 +20,7 @@ import cyruslee487.donteatalone.Restaurant;
 import cyruslee487.donteatalone.Activity.RestaurantInfoActivity;
 
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.mViewHolder> {
+public class MainMenuRecyclerViewAdapter extends RecyclerView.Adapter<MainMenuRecyclerViewAdapter.mViewHolder> {
 
     //Constants
     private static final String TAG = "DB";
@@ -34,7 +34,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private ArrayList<Restaurant> mRestaurants;
     private Context mContext;
 
-    public RecyclerViewAdapter(Context mContext, ArrayList<Restaurant> mRestaurants) {
+    public MainMenuRecyclerViewAdapter(Context mContext, ArrayList<Restaurant> mRestaurants) {
         this.mContext = mContext;
         this.mRestaurants = mRestaurants;
     }

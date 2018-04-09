@@ -1,5 +1,6 @@
 package cyruslee487.donteatalone.RecyclerViewAdapter;
 
+import android.app.Notification;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
@@ -12,20 +13,31 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import cyruslee487.donteatalone.Common;
 import cyruslee487.donteatalone.EventRoomDatabase.Event;
 import cyruslee487.donteatalone.EventRoomDatabase.EventDatabase;
+import cyruslee487.donteatalone.Model.MyResponse;
+import cyruslee487.donteatalone.Model.Sender;
 import cyruslee487.donteatalone.R;
+import cyruslee487.donteatalone.Remote.APIService;
+import cyruslee487.donteatalone.SharedPrefManager;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class FindEventRecyclerViewAdapter extends RecyclerView.Adapter<FindEventRecyclerViewAdapter.mFEViewHolder>{
 
     private static final String TAG = "DB";
 
     private Context mContext;
-    private List<Event> mEventsFromFirebase = new ArrayList<>();
+    private List<Event> mEventsFromFirebase;
+    private APIService mAPIService;
+
 
     public FindEventRecyclerViewAdapter(Context mContext, List<Event> mEventsFromFirebase) {
         this.mContext = mContext;
@@ -42,6 +54,8 @@ public class FindEventRecyclerViewAdapter extends RecyclerView.Adapter<FindEvent
     @Override
     public void onBindViewHolder(mFEViewHolder holder, int position) {
         final Event event = mEventsFromFirebase.get(position);
+        Common.currentToken = SharedPrefManager.getInstance(mContext).getDeviceToken();
+        mAPIService = Common.getFCMClient();
 
         String url = getImageUrl(event.getRestaurant_name());
         if(!url.equals("nothing")){
@@ -61,6 +75,26 @@ public class FindEventRecyclerViewAdapter extends RecyclerView.Adapter<FindEvent
             @Override
             public void onClick(View view) {
                 new insertMyEventAsync(mContext).execute(event);
+
+                cyruslee487.donteatalone.Model.Notification notification =
+                        new cyruslee487.donteatalone.Model.Notification("CONTENT", "TITLE");
+                Sender sender = new Sender(Common.currentToken,notification);
+                mAPIService.sendNotification(sender)
+                        .enqueue(new Callback<MyResponse>() {
+                            @Override
+                            public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                                if(response.body().success == 1){
+                                    Log.d(TAG, "onResponse: FindEventRecyclerAdapter: Success");
+                                }else{
+                                    Log.d(TAG, "onResponse: FindEventRecyclerAdapter: Failed");
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<MyResponse> call, Throwable t) {
+                                Log.e(TAG, "onFailure: Error", t.getCause());
+                            }
+                        });
             }
         });
     }

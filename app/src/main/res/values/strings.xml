@@ -2,8 +2,7 @@
     <string name="app_name">Don\'t Eat Alone</string>
 
     <string name="google_maps_API_key">AIzaSyC_xst7LNy8zXtaqye5HE9aSb7eahTxwKg</string>
-    <string name="tabs3_token">dw6GAXQmdtw:APA91bHc201WDcwqOyNHJUojobUmAgz084AnRqIyJV5t-Stnk2Hq6HDIb3Op398Av68TbFCEE1Wy2Xap_IGfPP8lgbv35wWfKMGfe1wxRUpqN4DR3BNxIrPwseQnGk7Kh80wQhTieP8B</string>
-    <string name="emulator_token">ea6A9LUWoSI:APA91bHSOq4Bq894ftEknM7l3uDr9IPIlcgES76Ggi7dQ0eE5eAItInOmKBqdIb-Qp8TQyqqftQYGPm8Quoj8d404Ad5kr81HgEEZmGA4PAla7MjhoviUOtZcAeR0WG2iDoiBXoFDp0j</string>
+    <string name="Firebase_auth_key">AAAAtzSFXc0:APA91bEAKThVrReGT3_bQb4kHuCMF_oD8QIBzIrX1SYg-JtqNKRWYIdZxr-xAQRwYr4j6YbjFAci7E7J7DOcWkemRCx5HAUrdXIhr29qph9YUC_rKAAmZ5StOh8n8Y8Dv-9FMfDYxsEU</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
