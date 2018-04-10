@@ -37,6 +37,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -105,14 +106,6 @@ public class MainActivity extends AppCompatActivity
         }
 
         new sendTokenAsync().execute();
-        /*
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user != null) {
-            Log.d(TAG, "onCreate: User email => " + user.getEmail());
-            String email = user.getEmail();
-            sendTokenToServer(email);
-        }
-        */
 
         initBitmaps();
 
@@ -220,12 +213,14 @@ public class MainActivity extends AppCompatActivity
             String date = getIntent().getStringExtra(SELECT_DATE);
             String time = getIntent().getStringExtra(SELECT_TIME);
             String token = SharedPrefManager.getInstance(this).getDeviceToken();
-            if(mUsername == ANONYMOUS){
+            if(mUsername.equals(ANONYMOUS)){
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                mUsername = user.getDisplayName();
+                if(user != null) {
+                    mUsername = user.getDisplayName();
+                }
             }
 
-            mDatabaseReference.push().setValue(new Event(mUsername, name, address, date, time,token));
+            mDatabaseReference.push().setValue(new Event(mUsername, name, address, date, time, token));
 
             Log.d(TAG, "onCreate: Set value: " + mUsername + "___"
                     + name + "___" + address + "___" + date + "___" + time);
@@ -270,7 +265,7 @@ public class MainActivity extends AppCompatActivity
             mFirebaseAuth.addAuthStateListener(mAuthStateListener);
         }
         //Log.d(TAG, "onResume: username ===> " + mUsername);
-        if(mUsername == ANONYMOUS) {
+        if(mUsername.equals(ANONYMOUS)) {
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if(user!=null)
                 mUsername = user.getDisplayName();
@@ -461,7 +456,7 @@ public class MainActivity extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -484,7 +479,7 @@ public class MainActivity extends AppCompatActivity
             AuthUI.getInstance().signOut(this);
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
