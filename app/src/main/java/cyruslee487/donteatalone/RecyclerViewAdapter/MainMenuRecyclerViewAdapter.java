@@ -48,7 +48,7 @@ public class MainMenuRecyclerViewAdapter extends RecyclerView.Adapter<MainMenuRe
 
     @Override
     public void onBindViewHolder(final mViewHolder holder, final int position) {
-        Log.d(TAG, "onBindViewHolder: called");
+        //Log.d(TAG, "onBindViewHolder: called");
 
         final Restaurant restaurant = mRestaurants.get(position);
 

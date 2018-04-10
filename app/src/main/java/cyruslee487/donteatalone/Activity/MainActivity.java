@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -62,7 +63,8 @@ public class MainActivity extends AppCompatActivity
     private static final String SELECT_TIME = "select_time";
     private static final String IMAGE_NAME = "image_name";
     private static final String IMAGE_ADDRESS = "image_address";
-    private static final String URL_STORE_TOKEN = "http://10.50.109.25/fcm/register.php";
+    //private static final String URL_STORE_TOKEN = "http://10.50.109.25/fcm/register.php";
+    private static final String URL_STORE_TOKEN = "http://10.0.2.2/fcm/register.php";
     private static final int RC_SIGN_IN = 1001;
     private static final int ERROR_DIALOG_REQUEST = 9001;
     private static final int PERMISSION_REQUEST_CODE = 5001;
@@ -102,12 +104,15 @@ public class MainActivity extends AppCompatActivity
             getPermission();
         }
 
+        new sendTokenAsync().execute();
+        /*
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if(user != null) {
+            Log.d(TAG, "onCreate: User email => " + user.getEmail());
             String email = user.getEmail();
             sendTokenToServer(email);
-        }else{
         }
+        */
 
         initBitmaps();
 
@@ -214,13 +219,13 @@ public class MainActivity extends AppCompatActivity
             String address = getIntent().getStringExtra(IMAGE_ADDRESS);
             String date = getIntent().getStringExtra(SELECT_DATE);
             String time = getIntent().getStringExtra(SELECT_TIME);
-
+            String token = SharedPrefManager.getInstance(this).getDeviceToken();
             if(mUsername == ANONYMOUS){
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 mUsername = user.getDisplayName();
             }
 
-            mDatabaseReference.push().setValue(new Event(mUsername, name, address, date, time));
+            mDatabaseReference.push().setValue(new Event(mUsername, name, address, date, time,token));
 
             Log.d(TAG, "onCreate: Set value: " + mUsername + "___"
                     + name + "___" + address + "___" + date + "___" + time);
@@ -379,7 +384,6 @@ public class MainActivity extends AppCompatActivity
     private void sendTokenToServer(final String email) {
 
         final String token = SharedPrefManager.getInstance(this).getDeviceToken();
-
         if (token == null) {
             Log.d(TAG, "sendTokenToServer: Token not generated");
             return;
@@ -391,7 +395,7 @@ public class MainActivity extends AppCompatActivity
                     public void onResponse(String response) {
                         try {
                             JSONObject obj = new JSONObject(response);
-                            Log.d(TAG, "onResponse: " + obj.getString("message")    );
+                            Log.d(TAG, "onResponse: " + obj.getString("message") + " => " + token);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -415,6 +419,19 @@ public class MainActivity extends AppCompatActivity
         };
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
+    }
+
+    private class sendTokenAsync extends AsyncTask<Void, Void, Void>{
+        @Override
+        protected Void doInBackground(Void... voids) {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            while(user == null)
+                user = FirebaseAuth.getInstance().getCurrentUser();
+            Log.d(TAG, "onCreate: User email => " + user.getEmail());
+            String email = user.getEmail();
+            sendTokenToServer(email);
+            return null;
+        }
     }
 
     @Override

@@ -54,7 +54,8 @@ public class FindEventRecyclerViewAdapter extends RecyclerView.Adapter<FindEvent
     @Override
     public void onBindViewHolder(mFEViewHolder holder, int position) {
         final Event event = mEventsFromFirebase.get(position);
-        Common.currentToken = SharedPrefManager.getInstance(mContext).getDeviceToken();
+        //Common.currentToken = SharedPrefManager.getInstance(mContext).getDeviceToken();
+        Common.currentToken = event.getToken();
         mAPIService = Common.getFCMClient();
 
         String url = getImageUrl(event.getRestaurant_name());
@@ -74,8 +75,10 @@ public class FindEventRecyclerViewAdapter extends RecyclerView.Adapter<FindEvent
         holder.relative_find_event.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //Add event to Room Databse
                 new insertMyEventAsync(mContext).execute(event);
 
+                //Send FCM to Event host
                 cyruslee487.donteatalone.Model.Notification notification =
                         new cyruslee487.donteatalone.Model.Notification("CONTENT", "TITLE");
                 Sender sender = new Sender(Common.currentToken,notification);

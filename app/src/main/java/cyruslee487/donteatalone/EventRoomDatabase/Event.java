@@ -25,17 +25,20 @@ public class Event {
     @ColumnInfo(name = "time")
             private String time;
 
+    @ColumnInfo(name = "token")
+            private String token;
+
 
     public Event(){
     }
 
-    public Event(String username, String restaurant_name, String location, String date, String time){
+    public Event(String username, String restaurant_name, String location, String date, String time, String token){
         this.username = username;
-
         this.restaurant_name = restaurant_name;
         this.location = location;
         this.date = date;
         this.time = time;
+        this.token = token;
     }
 
     public int getEid() {
@@ -86,6 +89,14 @@ public class Event {
         this.time = time;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
     @Override
     public String toString() {
         return "Event{" +
@@ -94,6 +105,7 @@ public class Event {
                 ", location='" + location + '\'' +
                 ", date='" + date + '\'' +
                 ", time='" + time + '\'' +
+                ", token='" + token + '\'' +
                 '}';
     }
 }
