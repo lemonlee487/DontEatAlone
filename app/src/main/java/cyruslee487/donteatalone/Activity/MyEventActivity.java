@@ -26,7 +26,7 @@ import java.util.List;
 import cyruslee487.donteatalone.EventRoomDatabase.Event;
 import cyruslee487.donteatalone.EventRoomDatabase.EventDatabase;
 import cyruslee487.donteatalone.R;
-import cyruslee487.donteatalone.RecyclerViewAdapter.FindEventRecyclerViewAdapter;
+import cyruslee487.donteatalone.RecyclerViewAdapter.MyEventRecyclerViewAdapter;
 
 public class MyEventActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -118,8 +118,8 @@ public class MyEventActivity extends AppCompatActivity
     private void initRecyclerView(){
         Log.d(TAG, "initRecyclerView: ok");
         RecyclerView recyclerView = findViewById(R.id.recyclerview_my_event);
-        FindEventRecyclerViewAdapter mAdapter =
-                new FindEventRecyclerViewAdapter(this, mEventFromRoomDatabase);
+        MyEventRecyclerViewAdapter mAdapter =
+                new MyEventRecyclerViewAdapter(this, mEventFromRoomDatabase);
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }

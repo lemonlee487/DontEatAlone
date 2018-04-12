@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="wrap_content"
-    android:padding="10dp" android:id="@+id/relative_find_event">
+    android:padding="25dp" android:id="@+id/relative_find_event">
 
     <ImageView
         android:layout_width="80dp"
@@ -24,7 +24,7 @@
         android:id="@+id/restaurant_name_find_event"
         android:text="Beta Dinning Room"
         android:layout_toRightOf="@+id/image_view_find_event"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="50dp"
         android:layout_marginLeft="10dp"
         android:textSize="16dp"/>
 
@@ -34,7 +34,7 @@
         android:id="@+id/restaurant_address_find_event"
         android:text="666 Beta Street"
         android:layout_toRightOf="@+id/image_view_find_event"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="75dp"
         android:layout_marginLeft="10dp"
         android:textSize="16dp"/>
 
@@ -45,7 +45,7 @@
         android:text="2018/12/12"
         android:textSize="16dp"
         android:layout_toRightOf="@+id/image_view_find_event"
-        android:layout_marginTop="75dp"
+        android:layout_marginTop="25dp"
         android:layout_marginLeft="10dp"/>
 
     <TextView
@@ -55,7 +55,7 @@
         android:text="00:00"
         android:textSize="16dp"
         android:layout_toRightOf="@+id/date_find_event"
-        android:layout_marginTop="75dp"
+        android:layout_marginTop="25dp"
         android:layout_marginLeft="10dp"/>
 
 </RelativeLayout>

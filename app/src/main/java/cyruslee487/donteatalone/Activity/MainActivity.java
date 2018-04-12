@@ -64,8 +64,8 @@ public class MainActivity extends AppCompatActivity
     private static final String SELECT_TIME = "select_time";
     private static final String IMAGE_NAME = "image_name";
     private static final String IMAGE_ADDRESS = "image_address";
-    //private static final String URL_STORE_TOKEN = "http://10.50.109.25/fcm/register.php";
-    private static final String URL_STORE_TOKEN = "http://10.0.2.2/fcm/register.php";
+    private static final String URL_STORE_TOKEN = "http://10.50.109.25/fcm/register.php";
+
     private static final int RC_SIGN_IN = 1001;
     private static final int ERROR_DIALOG_REQUEST = 9001;
     private static final int PERMISSION_REQUEST_CODE = 5001;
@@ -219,9 +219,9 @@ public class MainActivity extends AppCompatActivity
                     mUsername = user.getDisplayName();
                 }
             }
-
-            mDatabaseReference.push().setValue(new Event(mUsername, name, address, date, time, token));
-
+            String key = mDatabaseReference.push().getKey();
+            Log.d(TAG, "getIntentFromRestaurantInfoActivity: key => " + key);
+            mDatabaseReference.child(key).setValue(new Event(key, mUsername, name, address, date, time, token));
             Log.d(TAG, "onCreate: Set value: " + mUsername + "___"
                     + name + "___" + address + "___" + date + "___" + time);
         }
@@ -390,7 +390,7 @@ public class MainActivity extends AppCompatActivity
                     public void onResponse(String response) {
                         try {
                             JSONObject obj = new JSONObject(response);
-                            Log.d(TAG, "onResponse: " + obj.getString("message") + " => " + token);
+                            Log.d(TAG, "onResponse: " + obj.getString("message"));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

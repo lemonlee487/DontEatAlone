@@ -10,6 +10,9 @@ public class Event {
     @PrimaryKey(autoGenerate = true)
             private int eid;
 
+    @ColumnInfo(name = "key")
+            private String key;
+
     @ColumnInfo(name = "user_name")
             private String username;
 
@@ -32,7 +35,8 @@ public class Event {
     public Event(){
     }
 
-    public Event(String username, String restaurant_name, String location, String date, String time, String token){
+    public Event(String key, String username, String restaurant_name, String location, String date, String time, String token){
+        this.key = key;
         this.username = username;
         this.restaurant_name = restaurant_name;
         this.location = location;
@@ -47,6 +51,14 @@ public class Event {
 
     public void setEid(int eid) {
         this.eid = eid;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getUsername() {

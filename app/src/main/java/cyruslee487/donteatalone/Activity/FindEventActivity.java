@@ -38,6 +38,7 @@ public class FindEventActivity extends AppCompatActivity
 
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
+    private ChildEventListener mChildEventListener;
     private RecyclerView recyclerView;
     private FindEventRecyclerViewAdapter mAdapter;
     private ArrayList<Event> mEventsFromFirebase = new ArrayList<>();
@@ -99,6 +100,7 @@ public class FindEventActivity extends AppCompatActivity
             }
         });
     }
+
 
     @Override
     public void onBackPressed() {
