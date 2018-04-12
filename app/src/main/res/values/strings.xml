@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Don\'t Eat Alone</string>
 
+    <string name="google_maps_API_key">AIzaSyC_xst7LNy8zXtaqye5HE9aSb7eahTxwKg</string>
+    <string name="Firebase_auth_key">AAAAtzSFXc0:APA91bEAKThVrReGT3_bQb4kHuCMF_oD8QIBzIrX1SYg-JtqNKRWYIdZxr-xAQRwYr4j6YbjFAci7E7J7DOcWkemRCx5HAUrdXIhr29qph9YUC_rKAAmZ5StOh8n8Y8Dv-9FMfDYxsEU</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
@@ -22,8 +25,43 @@
     <string name="WhiteSpot_Url">https://www.whitespot.ca/sites/all/themes/whitespot/logo.png</string>
     <string name="Boston_Url">https://pbs.twimg.com/profile_images/899615036699574272/qC1FzTOv_400x400.jpg</string>
 
-    <string name="Eat_here">Eat here</string>
+    <string name="White_Spot_01_latlng">50.663599,-120.352802</string>
+    <string name="White_Spot_02_latlng">50.696459,-120.361058</string>
+    <string name="Red_Robin_01_latlng">50.666638,-120.355216</string>
+    <string name="Domino_01_latlng">50.671228,-120.354309</string>
+    <string name="PizzaHut_01_latlng">50.667309,-120.355510</string>
+    <string name="PizzaHut_02_latlng">50.700848,-120.360063</string>
+    <string name="Wendy_01_latlng">50.669688,-120.354922</string>
+    <string name="Wendy_02_latlng">50.677869,-120.289915</string>
+    <string name="Wendy_03_latlng">50.699066,-120.363341</string>
+    <string name="McDonald_01_latlng">50.663558,-120.350930</string>
+    <string name="McDonald_02_latlng">50.665622,-120.369793</string>
+    <string name="McDonald_03_latlng">50.675703,-120.334223</string>
+    <string name="Boston_01_latlng">50.663752,-120.351726</string>
+    <string name="KFC_01_latlng">50.663173,-120.351940</string>
 
+
+    <string name="White_Spot_01_address">555 Notre Dame Dr #1, Kamloops, BC V2C 1E6</string>
+    <string name="White_Spot_02_address">675 Tranquille Rd, Kamloops, BC V2B 3H7</string>
+    <string name="Red_Robin_01_address">1180 Columbia ST W Summit Shopping Centre, Kamloops, BC V2C 6R6</string>
+    <string name="Domino_01_address">875 Columbia St W Unit #2, Kamloops, BC V2C 1K7</string>
+    <string name="PizzaHut_01_address">1180 Columbia St W B113, Kamloops, BC V2C 6R6</string>
+    <string name="PizzaHut_02_address">750 Fortune Dr, Kamloops, BC V2B 2L2</string>
+    <string name="Wendy_01_address">910 Columbia St W, Kamloops, BC V2C 2V9</string>
+    <string name="Wendy_02_address">1735 Trans-Canada Hwy, Kamloops, BC V2C 3Z6</string>
+    <string name="Wendy_03_address">801 Fortune Dr, Kamloops, BC V2B 2L4</string>
+    <string name="McDonald_01_address">500 Notre Dame Dr, Kamloops, BC V2C 6T6</string>
+    <string name="McDonald_02_address">1055 Hillside Dr, Kamloops, BC V2E 2S5</string>
+    <string name="McDonald_03_address">301 Victoria St, Kamloops, BC V2C 2A3</string>
+    <string name="Boston_01_address">500 Notre Dame Dr, Kamloops, BC V2C 6T6</string>
+    <string name="KFC_01_address">555 Notre Dame Dr, Kamloops, BC V2C 1E6</string>
+
+    <string name="Eat_here">Eat here</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_find_event">FindEventActivity</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="default_notification_channel_id">default_notification_channel_id</string>
+    <string name="title_activity_my_event">MyEventActivity</string>
+    <string name="upcoming_event">Next Upcoming Event</string>
+
 </resources>

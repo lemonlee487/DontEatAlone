@@ -9,10 +9,19 @@ public class Restaurant {
     private String name;
     private String address;
     private String imageUrl;
+    private double latitude, longitude;
 
     public Restaurant(String name, String imageUrl){
         this.name = name;
         this.imageUrl = imageUrl;
+    }
+
+    public Restaurant(String name, String address, String imageUrl, double latitude, double longitude) {
+        this.name = name;
+        this.address = address;
+        this.imageUrl = imageUrl;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public String getName() {
@@ -37,5 +46,21 @@ public class Restaurant {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }

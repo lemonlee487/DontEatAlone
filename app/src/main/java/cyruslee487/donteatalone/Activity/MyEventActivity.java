@@ -1,7 +1,9 @@
-package cyruslee487.donteatalone;
+package cyruslee487.donteatalone.Activity;
 
+import android.content.Context;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,35 +18,29 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListView;
-
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class FindEventActivity extends AppCompatActivity
+import cyruslee487.donteatalone.EventRoomDatabase.Event;
+import cyruslee487.donteatalone.EventRoomDatabase.EventDatabase;
+import cyruslee487.donteatalone.R;
+import cyruslee487.donteatalone.RecyclerViewAdapter.MyEventRecyclerViewAdapter;
+
+public class MyEventActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "DB";
 
-    private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference mDatabaseReference;
-    private ChildEventListener mChildEventListener;
-    private FirebaseAuth.AuthStateListener mAuthStateListener;
-    private ListView recyclerView;
-    private FindItemRecyclerViewApdater mAdapter;
-    private ArrayList<Event> mEvents = new ArrayList<>();
+
+    private List<Event> mEventFromRoomDatabase = new ArrayList<>();
+    private TextView usernameTV, restNameTV, addressTV, dateTV, timeTV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_find_event);
+        setContentView(R.layout.activity_my_event);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -67,43 +63,65 @@ public class FindEventActivity extends AppCompatActivity
         changeNavMenuItemName(navigationView);
         navigationView.setNavigationItemSelectedListener(this);
 
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mDatabaseReference = mFirebaseDatabase.getReference().child("events");
+        usernameTV = findViewById(R.id.username_my_event);
+        restNameTV = findViewById(R.id.restaurant_name_my_event);
+        addressTV = findViewById(R.id.restaurant_address_my_event);
+        dateTV = findViewById(R.id.date_my_event);
+        timeTV = findViewById(R.id.time_my_event);
 
+        getEventFromRoomDatabase();
+    }
 
-        initRecyclerView();attachDatabaseListener();
+    private void getEventFromRoomDatabase(){
+        new getEventFromRoomDatabase(this).execute();
+    }
+
+    private class getEventFromRoomDatabase extends AsyncTask<Void, Void, Void> {
+        private EventDatabase eventDatabase;
+
+        private getEventFromRoomDatabase(Context mContext){
+            eventDatabase = EventDatabase.getDatabase(mContext);
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            mEventFromRoomDatabase = eventDatabase.eventDao().getAll();
+            setUpComingEvent();
+            return null;
+        }
+    }
+
+    private void setUpComingEvent(){
+        if(!mEventFromRoomDatabase.isEmpty()){
+            Event event = mEventFromRoomDatabase.get(0);
+            if (event != null) {
+                usernameTV.setText(event.getUsername());
+                restNameTV.setText(event.getRestaurant_name());
+                addressTV.setText(event.getLocation());
+                dateTV.setText(event.getDate());
+                timeTV.setText(event.getTime());
+                Log.d(TAG, "setUpComingEvent: Set");
+
+                initRecyclerView();
+            } else {
+                Log.e(TAG, "setUpComingEvent: Event from room is null");
+            }
+        }else{
+            usernameTV.setText("NO");
+            restNameTV.setText("EVENT");
+            addressTV.setText("FOR");
+            dateTV.setText("YOU");
+            timeTV.setText("");
+        }
     }
 
     private void initRecyclerView(){
-        Log.d(TAG, "initRecyclerView: FindEventActivity");
-        recyclerView = findViewById(R.id.recyclerview_find_event);
-        mAdapter = new FindItemRecyclerViewApdater(this
-                , R.layout.find_event_list_item
-                , mEvents);
+        Log.d(TAG, "initRecyclerView: ok");
+        RecyclerView recyclerView = findViewById(R.id.recyclerview_my_event);
+        MyEventRecyclerViewAdapter mAdapter =
+                new MyEventRecyclerViewAdapter(this, mEventFromRoomDatabase);
         recyclerView.setAdapter(mAdapter);
-    }
-
-    private void attachDatabaseListener() {
-        if(mChildEventListener == null) {
-            mChildEventListener = new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    Event event = dataSnapshot.getValue(Event.class);
-                    mAdapter.add(event);
-                    Log.d(TAG, "onChildAdded: FindEventActivity");
-                }
-                @Override
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
-                @Override
-                public void onChildRemoved(DataSnapshot dataSnapshot) {}
-                @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
-                @Override
-                public void onCancelled(DatabaseError databaseError) {}
-            };
-            //Get notification if anything changes
-            mDatabaseReference.addChildEventListener(mChildEventListener);
-        }
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
     @Override
@@ -119,7 +137,7 @@ public class FindEventActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.find_event, menu);
+        getMenuInflater().inflate(R.menu.my_event, menu);
         return true;
     }
 
@@ -145,9 +163,15 @@ public class FindEventActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-            // Handle the camera action
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.setFlags(intent.getFlags()|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
         } else if (id == R.id.nav_gallery) {
-
+            Intent intent = new Intent(this, FindEventActivity.class);
+            intent.setFlags(intent.getFlags()|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
