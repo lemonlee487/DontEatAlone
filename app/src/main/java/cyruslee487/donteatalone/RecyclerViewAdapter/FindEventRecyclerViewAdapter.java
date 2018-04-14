@@ -85,6 +85,8 @@ public class FindEventRecyclerViewAdapter extends RecyclerView.Adapter<FindEvent
                 //Add event to Room Databse
                 new insertMyEventAsync(mContext).execute(event);
 
+                Toast.makeText(mContext, "Check -My Event- for new added event", Toast.LENGTH_LONG).show();
+
                 //Send FCM to Event host
                 cyruslee487.donteatalone.Model.Notification notification =
                         new cyruslee487.donteatalone.Model.Notification("CONTENT", "TITLE");

@@ -41,7 +41,6 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
 
     private Context mContext;
     private List<Event> mEventsList;
-    private APIService mAPIService;
 
 
     public MyEventRecyclerViewAdapter(Context mContext, List<Event> mEventsFromFirebase) {
@@ -60,8 +59,6 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
     public void onBindViewHolder(mMEViewHolder holder, int position) {
         final Event event = mEventsList.get(position);
         //Common.currentToken = SharedPrefManager.getInstance(mContext).getDeviceToken();
-        Common.currentToken = event.getToken();
-        mAPIService = Common.getFCMClient();
 
         String url = getImageUrl(event.getRestaurant_name());
         if(!url.equals("nothing")){

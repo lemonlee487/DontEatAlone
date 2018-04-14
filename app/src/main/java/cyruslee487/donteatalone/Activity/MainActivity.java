@@ -1,8 +1,11 @@
 package cyruslee487.donteatalone.Activity;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -19,6 +22,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -78,6 +84,8 @@ public class MainActivity extends AppCompatActivity
     private ChildEventListener mChildEventListener;
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
+    private FirebaseUser mFirebaseUser;
+    private SharedPrefManager mSharedPrefManager;
 
     @Override
     protected void onPostResume() {
@@ -113,6 +121,7 @@ public class MainActivity extends AppCompatActivity
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mDatabaseReference = mFirebaseDatabase.getReference().child("events");
         mFirebaseAuth = FirebaseAuth.getInstance();
+        mSharedPrefManager = SharedPrefManager.getInstance(this);
 
         getIntentFromRestaurantInfoActivity();
 
@@ -128,6 +137,14 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         };
+
+        if(mSharedPrefManager != null) {
+            if (isOwner()) {
+                Log.d(TAG, "onCreate: I am owner");
+            } else {
+                Log.d(TAG, "onCreate: I am not the owner");
+            }
+        }
 
     }
 
@@ -449,11 +466,68 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            Log.d(TAG, "onOptionsItemSelected: sign out");
+            Log.d(TAG, "onOptionsItemSelected: register restaurant account");
+            AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
+            View mView = getLayoutInflater().inflate(R.layout.restaurant_permission_custom_dialog,
+                    null);
+            final EditText mRegEditText = mView.findViewById(R.id.editText_cus_dialog);
+            mBuilder.setPositiveButton("Register", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                }
+            });
+            mBuilder.setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
+                }
+            });
+            mBuilder.setView(mView);
+            final AlertDialog dialog = mBuilder.create();
+            dialog.show();
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(!mRegEditText.getText().toString().isEmpty()) {
+                        String code = mRegEditText.getText().toString();
+                        if(code.equals("restaurantowner")){
+                            mFirebaseUser = mFirebaseAuth.getCurrentUser();
+                            mSharedPrefManager.saveOwnerStatus("owner", mFirebaseUser.getEmail());
+                            isOwner();
+                            dialog.dismiss();
+                            Toast.makeText(MainActivity.this, "Register as owner", Toast.LENGTH_SHORT).show();
+                        } else{
+                            Toast.makeText(MainActivity.this, "You are fake news", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            });
         }
         return super.onOptionsItemSelected(item);
     }
 
+    private boolean isOwner(){
+        String status = mSharedPrefManager.getOwnerStatus();
+        String email = mSharedPrefManager.getOwnerEmail();
+        mFirebaseUser = mFirebaseAuth.getCurrentUser();
+        String user_email = mFirebaseUser.getEmail();
+
+        if(status.equals("owner")){
+            if(email.equals(user_email)){
+                Log.d(TAG, "isOwner: Status: True, Email: Match");
+                return true;
+            }else{
+                Log.d(TAG, "isOwner: Status: True, Email: Not match");
+                mSharedPrefManager.saveOwnerStatus("not_owner", user_email);
+                return false;
+            }
+        }else{
+            Log.d(TAG, "isOwner: Status: False");
+            mSharedPrefManager.saveOwnerStatus("not_owner", user_email);
+            return false;
+        }
+    }
+    
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
