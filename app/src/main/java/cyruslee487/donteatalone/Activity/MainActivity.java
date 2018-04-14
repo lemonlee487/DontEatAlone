@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -87,6 +88,7 @@ public class MainActivity extends AppCompatActivity
     private FirebaseUser mFirebaseUser;
     private SharedPrefManager mSharedPrefManager;
 
+
     @Override
     protected void onPostResume() {
         super.onPostResume();
@@ -108,6 +110,10 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         changeNavMenuItemName(navigationView);
         navigationView.setNavigationItemSelectedListener(this);
+
+        View header = navigationView.getHeaderView(0);
+        TextView title = header.findViewById(R.id.nav_profile_title);
+        TextView detail = header.findViewById(R.id.nav_profile_detail);
 
         if(isServiceOk()){
             getPermission();
@@ -138,11 +144,15 @@ public class MainActivity extends AppCompatActivity
             }
         };
 
-        if(mSharedPrefManager != null) {
-            if (isOwner()) {
+        if(mSharedPrefManager != null && mFirebaseAuth.getCurrentUser() != null) {
+            if (isManager()) {
                 Log.d(TAG, "onCreate: I am owner");
+                title.setText(mFirebaseAuth.getCurrentUser().getDisplayName());
+                detail.setText(mSharedPrefManager.getOwnerStatus());
             } else {
                 Log.d(TAG, "onCreate: I am not the owner");
+                title.setText(mFirebaseAuth.getCurrentUser().getDisplayName());
+                detail.setText(mSharedPrefManager.getOwnerStatus());
             }
         }
 
@@ -492,8 +502,10 @@ public class MainActivity extends AppCompatActivity
                         String code = mRegEditText.getText().toString();
                         if(code.equals("restaurantowner")){
                             mFirebaseUser = mFirebaseAuth.getCurrentUser();
-                            mSharedPrefManager.saveOwnerStatus("owner", mFirebaseUser.getEmail());
-                            isOwner();
+                            mSharedPrefManager.saveOwnerStatus("Restaurant Manager", mFirebaseUser.getEmail());
+                            isManager();
+                            NavigationView nv = findViewById(R.id.nav_view);
+                            changeNavigationTitle(nv);
                             dialog.dismiss();
                             Toast.makeText(MainActivity.this, "Register as owner", Toast.LENGTH_SHORT).show();
                         } else{
@@ -506,26 +518,37 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    private boolean isOwner(){
+    private boolean isManager(){
         String status = mSharedPrefManager.getOwnerStatus();
         String email = mSharedPrefManager.getOwnerEmail();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         String user_email = mFirebaseUser.getEmail();
 
-        if(status.equals("owner")){
+        if(status.equals("Restaurant Manager")){
             if(email.equals(user_email)){
-                Log.d(TAG, "isOwner: Status: True, Email: Match");
+                Log.d(TAG, "isManager: Status: True, Email: Match");
                 return true;
             }else{
-                Log.d(TAG, "isOwner: Status: True, Email: Not match");
-                mSharedPrefManager.saveOwnerStatus("not_owner", user_email);
+                Log.d(TAG, "isManager: Status: True, Email: Not match");
+                mSharedPrefManager.saveOwnerStatus("Guest", user_email);
                 return false;
             }
         }else{
-            Log.d(TAG, "isOwner: Status: False");
-            mSharedPrefManager.saveOwnerStatus("not_owner", user_email);
+            Log.d(TAG, "isManager: Status: False");
+            mSharedPrefManager.saveOwnerStatus("Guest", user_email);
             return false;
         }
+    }
+
+    private void changeNavigationTitle(NavigationView navigationView){
+        View header = navigationView.getHeaderView(0);
+        TextView title = header.findViewById(R.id.nav_profile_title);
+        TextView detail = header.findViewById(R.id.nav_profile_detail);
+        if(mFirebaseAuth!=null)
+            title.setText(mFirebaseAuth.getCurrentUser().getDisplayName());
+
+        if(mSharedPrefManager!=null)
+            detail.setText(mSharedPrefManager.getOwnerStatus());
     }
     
     @SuppressWarnings("StatementWithEmptyBody")

@@ -51,7 +51,7 @@ public class SharedPrefManager {
 
     public String getOwnerStatus(){
         SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_STATUS, Context.MODE_PRIVATE);
-        return sharedPreferences.getString(TAG_STATUS, "not_owner");
+        return sharedPreferences.getString(TAG_STATUS, "Guest");
     }
 
     public String getOwnerEmail(){

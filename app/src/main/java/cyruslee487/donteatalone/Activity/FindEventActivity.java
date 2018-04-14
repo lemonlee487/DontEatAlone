@@ -16,7 +16,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,6 +33,7 @@ import java.util.ArrayList;
 import cyruslee487.donteatalone.EventRoomDatabase.Event;
 import cyruslee487.donteatalone.R;
 import cyruslee487.donteatalone.RecyclerViewAdapter.FindEventRecyclerViewAdapter;
+import cyruslee487.donteatalone.SharedPrefManager;
 
 public class FindEventActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -38,7 +42,10 @@ public class FindEventActivity extends AppCompatActivity
 
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
+    private FirebaseUser mFirebaseUser;
+    private FirebaseAuth mFirebaseAuth;
     private ChildEventListener mChildEventListener;
+    private SharedPrefManager mSharedPrefManager;
     private RecyclerView recyclerView;
     private FindEventRecyclerViewAdapter mAdapter;
     private ArrayList<Event> mEventsFromFirebase = new ArrayList<>();
@@ -71,6 +78,13 @@ public class FindEventActivity extends AppCompatActivity
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mDatabaseReference = mFirebaseDatabase.getReference().child("events");
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        mSharedPrefManager = SharedPrefManager.getInstance(this);
+
+        if(isManager())
+            changeNavigationTitle(navigationView);
+        else
+            changeNavigationTitle(navigationView);
 
         initRecyclerView();
     }
@@ -101,6 +115,39 @@ public class FindEventActivity extends AppCompatActivity
         });
     }
 
+    private boolean isManager(){
+        String status = mSharedPrefManager.getOwnerStatus();
+        String email = mSharedPrefManager.getOwnerEmail();
+        mFirebaseUser = mFirebaseAuth.getCurrentUser();
+        String user_email = mFirebaseUser.getEmail();
+
+        if(status.equals("Restaurant Manager")){
+            if(email.equals(user_email)){
+                Log.d(TAG, "isManager: Status: True, Email: Match");
+                return true;
+            }else{
+                Log.d(TAG, "isManager: Status: True, Email: Not match");
+                mSharedPrefManager.saveOwnerStatus("Guest", user_email);
+                return false;
+            }
+        }else{
+            Log.d(TAG, "isManager: Status: False");
+            mSharedPrefManager.saveOwnerStatus("Guest", user_email);
+            return false;
+        }
+    }
+
+    private void changeNavigationTitle(NavigationView navigationView){
+        View header = navigationView.getHeaderView(0);
+        TextView title = header.findViewById(R.id.nav_profile_title_fe);
+        TextView detail = header.findViewById(R.id.nav_profile_detail_fe);
+
+        if(mFirebaseAuth.getCurrentUser()!=null)
+            title.setText(mFirebaseAuth.getCurrentUser().getDisplayName());
+
+        if(mSharedPrefManager!=null)
+            detail.setText(mSharedPrefManager.getOwnerStatus());
+    }
 
     @Override
     public void onBackPressed() {
