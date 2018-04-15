@@ -10,6 +10,8 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -107,6 +109,21 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_main);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isManager()) {
+                    Intent intent = new Intent(MainActivity.this, ManagerEventActivity.class);
+                    startActivity(intent);
+
+                } else {
+                    Snackbar.make(view, "You do not have Manager Permission", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+            }
+        });
+
         NavigationView navigationView = findViewById(R.id.nav_view);
         changeNavMenuItemName(navigationView);
         navigationView.setNavigationItemSelectedListener(this);
@@ -125,7 +142,7 @@ public class MainActivity extends AppCompatActivity
 
         mUsername = ANONYMOUS;
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mDatabaseReference = mFirebaseDatabase.getReference().child("events");
+        mDatabaseReference = mFirebaseDatabase.getReference();
         mFirebaseAuth = FirebaseAuth.getInstance();
         mSharedPrefManager = SharedPrefManager.getInstance(this);
 
@@ -248,7 +265,7 @@ public class MainActivity extends AppCompatActivity
             }
             String key = mDatabaseReference.push().getKey();
             Log.d(TAG, "getIntentFromRestaurantInfoActivity: key => " + key);
-            mDatabaseReference.child(key).setValue(new Event(key, mUsername, name, address, date, time, token));
+            mDatabaseReference.child("events").child(key).setValue(new Event(key, mUsername, name, address, date, time, token));
             Log.d(TAG, "onCreate: Set value: " + mUsername + "___"
                     + name + "___" + address + "___" + date + "___" + time);
         }
