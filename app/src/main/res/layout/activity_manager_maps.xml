@@ -31,28 +31,29 @@
             android:src="@drawable/ic_magnify"/>
 
 
-        <EditText
+        <AutoCompleteTextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_toRightOf="@+id/ic_magnify"
+            android:layout_marginLeft="5dp"
             android:textSize="15sp"
             android:textColor="#000"
             android:id="@+id/search_address_manager_map"
             android:hint="Search by Address or Zip Code"
-            android:background="@null"/>
+            android:background="@null" />
 
     </RelativeLayout>
 
-    <ImageView
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:id="@+id/confirm_address_btn_manager_map"
         android:layout_alignParentRight="true"
         android:layout_marginRight="10dp"
         android:layout_marginTop="10dp"
         android:scaleType="centerCrop"
+        android:text="Save address"
         android:layout_below="@id/relative_manager_map"
-        android:src="@drawable/ic_check"
         android:onClick="sendSearchResult"/>
 
 </RelativeLayout>

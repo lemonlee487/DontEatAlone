@@ -30,6 +30,7 @@ public class ManagerEventActivity extends AppCompatActivity {
     private String mStartTime = "";
     private String mEndDate = "";
     private String mEndTime = "";
+    private String mAddress = "";
     int mConcat_start_date = 0;
     int mConcat_end_date = 0;
     int mConcat_start_time = 0;
@@ -53,6 +54,9 @@ public class ManagerEventActivity extends AppCompatActivity {
         mEndDateTV = findViewById(R.id.end_date_time_tv_manager_event);
         mNumPeopleET = findViewById(R.id.people_et_manager_event);
         mDescriptionET = findViewById(R.id.description_et_manager_event);
+
+        mAddress = getIntent().getStringExtra("Address");
+        Log.d(TAG, "onCreate: ManagerEventActivity: " + mAddress);
     }
 
     public void pickStart(View view){

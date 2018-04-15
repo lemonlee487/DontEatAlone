@@ -15,7 +15,7 @@
         android:theme="@style/AppTheme">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyC_xst7LNy8zXtaqye5HE9aSb7eahTxwKg" />
+            android:value="AIzaSyBtC2qyScdiWvnTFOenyNV0CUxyLxcdA5g" />
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -64,7 +64,7 @@
 
         <activity
             android:name=".Activity.ManagerMapsActivity"
-            android:label="@string/title_activity_manager_maps"></activity>
+            android:label="@string/title_activity_manager_maps"/>
     </application>
 
 </manifest>
