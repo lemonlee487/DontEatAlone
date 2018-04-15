@@ -64,5 +64,6 @@
     <string name="title_activity_my_event">MyEventActivity</string>
     <string name="upcoming_event">Next Upcoming Event</string>
     <string name="register_owner">Register Restaurant Account</string>
+    <string name="title_activity_manager_maps">Map</string>
 
 </resources>

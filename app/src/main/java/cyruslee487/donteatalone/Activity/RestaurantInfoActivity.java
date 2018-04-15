@@ -92,12 +92,12 @@ public class RestaurantInfoActivity extends FragmentActivity implements OnMapRea
                 .findFragmentById(R.id.map_rest_info);
 
         mapFragment.getMapAsync(RestaurantInfoActivity.this);
-        Log.d(TAG, "initMap: called");
+        //Log.d(TAG, "initMap: called");
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Log.d(TAG, "onMapReady: Map should be ready");
+        //Log.d(TAG, "onMapReady: Map should be ready");
         mMap = googleMap;
 
         LatLng location = new LatLng(mLat, mLng);
@@ -115,13 +115,13 @@ public class RestaurantInfoActivity extends FragmentActivity implements OnMapRea
     }
 
     private void moveCamera(LatLng latLng, float zoom){
-        Log.d(TAG, "moveCamera: lat: " + latLng.latitude + " lng: " + latLng.longitude);
+        //Log.d(TAG, "moveCamera: lat: " + latLng.latitude + " lng: " + latLng.longitude);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
         mMap.addMarker(new MarkerOptions().position(latLng).title(mImageAddress));
     }
 
     private void setImage(String imageUrl, String imageName, String address){
-        Log.d(TAG, "setImage: ");
+        //Log.d(TAG, "setImage: ");
         mImageView = findViewById(R.id.image_view_rest_info);
         mTextViewRestName = findViewById(R.id.rest_name_rest_info);
         mTextViewRestAddress = findViewById(R.id.rest_address_rest_info);
@@ -136,12 +136,12 @@ public class RestaurantInfoActivity extends FragmentActivity implements OnMapRea
     }
 
     public void createEvent(View view){
-        Log.d(TAG, "createEvent: button clicked");
+        //Log.d(TAG, "createEvent: button clicked");
         showDatePickerDialog();
     }
 
     private void showDatePickerDialog(){
-        Log.d(TAG, "showDatePickerDialog: ");
+        //Log.d(TAG, "showDatePickerDialog: ");
         Calendar cal = Calendar.getInstance();
         final int year = cal.get(Calendar.YEAR);
         final int month = cal.get(Calendar.MONTH);
@@ -158,7 +158,7 @@ public class RestaurantInfoActivity extends FragmentActivity implements OnMapRea
                 } else {
                     mMonth += 1;
                     mDate = mYear + "/" + mMonth + "/" + mDay;
-                    Log.d(TAG, "onDateSet: Date selected: " + mDate);
+                    //Log.d(TAG, "onDateSet: Date selected: " + mDate);
                     showTimePickerDialog();
                 }
             }
@@ -175,17 +175,17 @@ public class RestaurantInfoActivity extends FragmentActivity implements OnMapRea
     }
 
     private void showTimePickerDialog(){
-        Log.d(TAG, "showTimePickerDialog: ");
+        //Log.d(TAG, "showTimePickerDialog: ");
         Calendar cal = Calendar.getInstance();
         final int hour = cal.get(Calendar.HOUR);
         final int minute = cal.get(Calendar.MINUTE);
-        Log.d(TAG, "showTimePickerDialog: Current time: " + hour + ":" + minute);
+        //Log.d(TAG, "showTimePickerDialog: Current time: " + hour + ":" + minute);
 
         mTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int mHour, int mMinute) {
                 mTime = mHour + ":" + mMinute;
-                Log.d(TAG, "onTimeSet: " + mTime);
+                //Log.d(TAG, "onTimeSet: " + mTime);
 
                 if(!mDate.isEmpty() && !mTime.isEmpty()){
                     backToMainActivity(mDate, mTime);
@@ -226,13 +226,13 @@ public class RestaurantInfoActivity extends FragmentActivity implements OnMapRea
                 @Override
                 public void onComplete(@NonNull Task task) {
                     if(task.isSuccessful()){
-                        Log.d(TAG, "onComplete: Found current location");
+                        //Log.d(TAG, "onComplete: Found current location");
                         Location currentLocation = (Location) task.getResult();
                         moveCamera(new LatLng(currentLocation.getLatitude()
                                 , currentLocation.getLongitude())
                                 , DEFAUT_ZOOM);
                     }else{
-                        Log.d(TAG, "onComplete: current location is null");
+                        //Log.d(TAG, "onComplete: current location is null");
 
                     }
                 }

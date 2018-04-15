@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -35,6 +36,7 @@ public class ManagerEventActivity extends AppCompatActivity {
     int mConcat_end_time = 0;
 
     private TextView mStartDateTV, mEndDateTV;
+    private EditText mNumPeopleET, mDescriptionET;
     private DatePickerDialog.OnDateSetListener mDateSetListener;
     private TimePickerDialog.OnTimeSetListener mTimeSetListener;
     private Context mContext;
@@ -49,6 +51,8 @@ public class ManagerEventActivity extends AppCompatActivity {
         mContext = getApplicationContext();
         mStartDateTV = findViewById(R.id.start_date_time_tv_manager_event);
         mEndDateTV = findViewById(R.id.end_date_time_tv_manager_event);
+        mNumPeopleET = findViewById(R.id.people_et_manager_event);
+        mDescriptionET = findViewById(R.id.description_et_manager_event);
     }
 
     public void pickStart(View view){
@@ -209,6 +213,7 @@ public class ManagerEventActivity extends AppCompatActivity {
     }
 
     public void toManagerMapActivity(View view){
-
+        Intent intent = new Intent(ManagerEventActivity.this, ManagerMapsActivity.class);
+        startActivity(intent);
     }
 }

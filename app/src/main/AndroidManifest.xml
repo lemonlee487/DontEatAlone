@@ -36,37 +36,35 @@
         <activity
             android:name=".Activity.RestaurantInfoActivity"
             android:label="RestaurantInfoActivity" />
-
         <activity
             android:name=".Activity.FindEventActivity"
             android:label="@string/title_activity_find_event"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".Activity.MapsActivity"
             android:label="@string/title_activity_maps" />
-
         <activity
             android:name=".Activity.MyEventActivity"
             android:label="@string/title_activity_my_event"
             android:theme="@style/AppTheme.NoActionBar" />
-
-        <activity android:name=".Activity.ManagerEventActivity"
-            android:windowSoftInputMode="stateVisible|adjustResize"/>
+        <activity
+            android:name=".Activity.ManagerEventActivity"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
 
         <service android:name=".FirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
         <service android:name=".FirebaseInstanceIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
 
-
+        <activity
+            android:name=".Activity.ManagerMapsActivity"
+            android:label="@string/title_activity_manager_maps"></activity>
     </application>
 
 </manifest>
