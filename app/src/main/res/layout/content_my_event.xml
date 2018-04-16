@@ -16,6 +16,7 @@
         android:text="Next Upcoming Event"
         android:textAlignment="center"
         android:textSize="30dp"
+        android:textColor="#000"
         app:layout_constraintBottom_toTopOf="@+id/relative_my_event"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,7 +39,7 @@
         android:layout_width="0dp"
         android:layout_height="150dp"
         android:layout_marginBottom="6dp"
-        android:background="#e5aaaa"
+        android:background="#ff5079"
         android:padding="8dp"
         app:layout_constraintBottom_toTopOf="@+id/recyclerview_my_event"
         app:layout_constraintEnd_toEndOf="parent"
@@ -58,7 +59,9 @@
             android:layout_marginLeft="10dp"
             android:layout_toRightOf="@+id/image_view_my_event"
             android:text="Beta Tester"
-            android:textSize="16dp" />
+            android:textSize="16dp"
+            android:textStyle="bold"
+            android:textColor="#000"/>
 
         <TextView
             android:id="@+id/restaurant_name_my_event"
@@ -68,7 +71,9 @@
             android:layout_marginTop="50dp"
             android:layout_toRightOf="@+id/image_view_my_event"
             android:text="Beta Dinning Room"
-            android:textSize="16dp" />
+            android:textSize="16dp"
+            android:textStyle="bold"
+            android:textColor="#000"/>
 
         <TextView
             android:id="@+id/restaurant_address_my_event"
@@ -78,7 +83,9 @@
             android:layout_marginTop="75dp"
             android:layout_toRightOf="@+id/image_view_my_event"
             android:text="666 Beta Street"
-            android:textSize="16dp" />
+            android:textStyle="bold"
+            android:textSize="16dp"
+            android:textColor="#000"/>
 
         <TextView
             android:id="@+id/date_my_event"
@@ -88,7 +95,9 @@
             android:layout_marginTop="25dp"
             android:layout_toRightOf="@+id/image_view_my_event"
             android:text="2018/12/12"
-            android:textSize="16dp" />
+            android:textSize="16dp"
+            android:textStyle="bold"
+            android:textColor="#000"/>
 
         <TextView
             android:id="@+id/time_my_event"
@@ -98,7 +107,9 @@
             android:layout_marginTop="25dp"
             android:layout_toRightOf="@+id/date_my_event"
             android:text="00:00"
-            android:textSize="16dp" />
+            android:textStyle="bold"
+            android:textSize="16dp"
+            android:textColor="#000"/>
 
 
     </RelativeLayout>

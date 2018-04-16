@@ -1,61 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="wrap_content"
-    android:padding="25dp" android:id="@+id/relative_find_event">
+    android:padding="8dp">
 
-    <ImageView
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:id="@+id/image_view_find_event"
-        android:src="@mipmap/ic_launcher"/>
-
-    <TextView
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/username_find_event"
-        android:text="Beta Tester"
-        android:layout_toRightOf="@+id/image_view_find_event"
-        android:layout_marginLeft="10dp"
-        android:textSize="16dp"/>
+        android:id="@+id/relative_find_event"
+        android:padding="8dp"
+        android:background="#a0db8e">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/restaurant_name_find_event"
-        android:text="Beta Dinning Room"
-        android:layout_toRightOf="@+id/image_view_find_event"
-        android:layout_marginTop="50dp"
-        android:layout_marginLeft="10dp"
-        android:textSize="16dp"/>
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:id="@+id/image_view_find_event"
+            android:src="@mipmap/ic_launcher"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/restaurant_address_find_event"
-        android:text="666 Beta Street"
-        android:layout_toRightOf="@+id/image_view_find_event"
-        android:layout_marginTop="75dp"
-        android:layout_marginLeft="10dp"
-        android:textSize="16dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/username_find_event"
+            android:text="Beta Tester"
+            android:layout_toRightOf="@+id/image_view_find_event"
+            android:layout_marginLeft="10dp"
+            android:textSize="16dp"
+            android:textColor="#000"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/date_find_event"
-        android:text="2018/12/12"
-        android:textSize="16dp"
-        android:layout_toRightOf="@+id/image_view_find_event"
-        android:layout_marginTop="25dp"
-        android:layout_marginLeft="10dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/restaurant_name_find_event"
+            android:text="Beta Dinning Room"
+            android:layout_toRightOf="@+id/image_view_find_event"
+            android:layout_marginTop="50dp"
+            android:layout_marginLeft="10dp"
+            android:textSize="16dp"
+            android:textColor="#000"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/time_find_event"
-        android:text="00:00"
-        android:textSize="16dp"
-        android:layout_toRightOf="@+id/date_find_event"
-        android:layout_marginTop="25dp"
-        android:layout_marginLeft="10dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/restaurant_address_find_event"
+            android:text="666 Beta Street"
+            android:layout_toRightOf="@+id/image_view_find_event"
+            android:layout_marginTop="75dp"
+            android:layout_marginLeft="10dp"
+            android:textSize="16dp"
+            android:textColor="#000"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/date_find_event"
+            android:text="2018/12/12"
+            android:textSize="16dp"
+            android:layout_toRightOf="@+id/image_view_find_event"
+            android:layout_marginTop="25dp"
+            android:layout_marginLeft="10dp"
+            android:textColor="#000"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/time_find_event"
+            android:text="00:00"
+            android:textSize="16dp"
+            android:layout_toRightOf="@+id/date_find_event"
+            android:layout_marginTop="25dp"
+            android:layout_marginLeft="10dp"
+            android:textColor="#000"/>
+
+
+    </RelativeLayout>
 
 </RelativeLayout>
