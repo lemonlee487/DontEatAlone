@@ -18,8 +18,8 @@ public class UtilFunction {
 
         nav_camara.setTitle("Restaurant");
         nav_gallery.setTitle("Find Event");
-        nav_slideshow.setTitle("My Event");
-        nav_manage.setTitle("Discount??");
+        nav_slideshow.setTitle("Discount??");
+        nav_manage.setTitle("My Event");
         nav_share.setTitle("Profile");
         nav_send.setTitle("Sign out");
     }

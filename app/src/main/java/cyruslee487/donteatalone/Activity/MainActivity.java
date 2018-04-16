@@ -583,11 +583,11 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
 
         } else if (id == R.id.nav_slideshow) {
-            Intent intent = new Intent(this, MyEventActivity.class);
+            Intent intent = new Intent(this, FindDiscountActivity.class);
             startActivity(intent);
 
         } else if (id == R.id.nav_manage) {
-            Intent intent = new Intent(this, FindDiscountActivity.class);
+            Intent intent = new Intent(this, MyEventActivity.class);
             startActivity(intent);
 
         } else if (id == R.id.nav_share) {

@@ -198,11 +198,12 @@ public class FindDiscountActivity extends AppCompatActivity
             startActivity(intent);
             finish();
         } else if (id == R.id.nav_slideshow) {
+
+        } else if (id == R.id.nav_manage) {
             Intent intent = new Intent(this, MyEventActivity.class);
             intent.setFlags(intent.getFlags()|Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             finish();
-        } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
 

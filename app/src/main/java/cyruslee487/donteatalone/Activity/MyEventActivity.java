@@ -31,6 +31,7 @@ import cyruslee487.donteatalone.EventRoomDatabase.EventDatabase;
 import cyruslee487.donteatalone.R;
 import cyruslee487.donteatalone.RecyclerViewAdapter.MyEventRecyclerViewAdapter;
 import cyruslee487.donteatalone.SharedPrefManager;
+import cyruslee487.donteatalone.UtilFunction;
 
 public class MyEventActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -58,7 +59,7 @@ public class MyEventActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        changeNavMenuItemName(navigationView);
+        UtilFunction.changeNavMenuItemName(navigationView);
         navigationView.setNavigationItemSelectedListener(this);
 
         usernameTV = findViewById(R.id.username_my_event);
@@ -214,6 +215,10 @@ public class MyEventActivity extends AppCompatActivity
             startActivity(intent);
             finish();
         } else if (id == R.id.nav_slideshow) {
+            Intent intent = new Intent(this, FindDiscountActivity.class);
+            intent.setFlags(intent.getFlags()|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
 
         } else if (id == R.id.nav_manage) {
 
@@ -241,7 +246,7 @@ public class MyEventActivity extends AppCompatActivity
         nav_camara.setTitle("Restaurant");
         nav_gallery.setTitle("Find Event");
         nav_slideshow.setTitle("My Event");
-        nav_manage.setTitle("Setting");
+        nav_manage.setTitle("Discount??");
         nav_share.setTitle("Profile");
         nav_send.setTitle("Sign out");
     }

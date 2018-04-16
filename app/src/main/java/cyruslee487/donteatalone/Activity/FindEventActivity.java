@@ -189,13 +189,13 @@ public class FindEventActivity extends AppCompatActivity
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
-            Intent intent = new Intent(this, MyEventActivity.class);
+            Intent intent = new Intent(this, FindDiscountActivity.class);
             intent.setFlags(intent.getFlags()|Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             finish();
 
         } else if (id == R.id.nav_manage) {
-            Intent intent = new Intent(this, FindDiscountActivity.class);
+            Intent intent = new Intent(this, MyEventActivity.class);
             intent.setFlags(intent.getFlags()|Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             finish();
