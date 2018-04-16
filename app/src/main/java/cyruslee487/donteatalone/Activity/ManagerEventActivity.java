@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,26 +19,42 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.Calendar;
 
+import cyruslee487.donteatalone.Discount;
 import cyruslee487.donteatalone.R;
+import cyruslee487.donteatalone.SharedPrefManager;
 
 public class ManagerEventActivity extends AppCompatActivity {
 
     private static final String TAG = "DB";
+    private static final String START_DATE = "start date";
+    private static final String START_TIME = "start time";
+    private static final String END_DATE = "end date";
+    private static final String END_TIME = "end time";
+    private static final String ADDRESS = "address";
+    private static final String REST_NAME = "rest name";
+    private static final String DESCIPTION = "desciption";
+    private static final String NUM_PEOPLE = "number of people";
+
 
     private String mStartDate = "";
     private String mStartTime = "";
     private String mEndDate = "";
     private String mEndTime = "";
     private String mAddress = "";
+    private String mRestName = "";
     int mConcat_start_date = 0;
     int mConcat_end_date = 0;
     int mConcat_start_time = 0;
     int mConcat_end_time = 0;
+    int mNumPeople = 0;
 
     private TextView mStartDateTV, mEndDateTV;
-    private EditText mNumPeopleET, mDescriptionET;
+    private EditText mNumPeopleET, mDescriptionET, mRestNameET;
     private DatePickerDialog.OnDateSetListener mDateSetListener;
     private TimePickerDialog.OnTimeSetListener mTimeSetListener;
     private Context mContext;
@@ -54,6 +71,7 @@ public class ManagerEventActivity extends AppCompatActivity {
         mEndDateTV = findViewById(R.id.end_date_time_tv_manager_event);
         mNumPeopleET = findViewById(R.id.people_et_manager_event);
         mDescriptionET = findViewById(R.id.description_et_manager_event);
+        mRestNameET = findViewById(R.id.rest_name_et_manager_event);
 
         mAddress = getIntent().getStringExtra("Address");
         Log.d(TAG, "onCreate: ManagerEventActivity: " + mAddress);
@@ -211,9 +229,38 @@ public class ManagerEventActivity extends AppCompatActivity {
     }
 
     public void postEvent(View view){
-        Intent intent = new Intent(ManagerEventActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish();
+        mNumPeople = Integer.parseInt(mNumPeopleET.getText().toString());
+        mRestName = mRestNameET.getText().toString();
+
+        if(!mStartTime.equals("") && !mStartDate.equals("") && !mEndTime.equals("") &&!mEndDate.equals("")
+                && !mRestName.equals("") && !mAddress.equals("") && mNumPeople != 0){
+            FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
+            DatabaseReference mDatabaseReference = mFirebaseDatabase.getReference();
+
+            String token = SharedPrefManager.getInstance(this).getDeviceToken();
+            String key = mDatabaseReference.push().getKey();
+            Log.d(TAG, "postEvent: Key => "+ key);
+            if(key!= null && token != null) {
+                mDatabaseReference.child("discount").child(key).setValue(new Discount(
+                        mAddress, mRestName, mStartDate, mStartTime, mEndDate, mEndTime,
+                        mNumPeople, mDescriptionET.getText().toString(), token, key));
+
+                Snackbar.make(view, "New discount added", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+
+                Intent intent = new Intent(ManagerEventActivity.this, MainActivity.class);
+                intent.setFlags(intent.getFlags()|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
+
+
+            }else{
+                Log.d(TAG, "postEvent: Key or token is null)");
+            }
+        }else{
+            Snackbar.make(view, "You miss some information", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        }
     }
 
     public void toManagerMapActivity(View view){

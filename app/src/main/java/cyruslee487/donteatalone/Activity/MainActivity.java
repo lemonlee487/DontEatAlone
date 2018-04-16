@@ -82,8 +82,8 @@ public class MainActivity extends AppCompatActivity
     private ArrayList<Restaurant> mRestaurants = new ArrayList<>();
     private String mUsername;
 
-    private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference mDatabaseReference;
+        private FirebaseDatabase mFirebaseDatabase;
+        private DatabaseReference mDatabaseReference;
     private ChildEventListener mChildEventListener;
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
