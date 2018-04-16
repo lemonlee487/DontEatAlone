@@ -62,6 +62,8 @@ import cyruslee487.donteatalone.R;
 import cyruslee487.donteatalone.RecyclerViewAdapter.MainMenuRecyclerViewAdapter;
 import cyruslee487.donteatalone.Restaurant;
 import cyruslee487.donteatalone.SharedPrefManager;
+import cyruslee487.donteatalone.UtilFunction;
+import okhttp3.internal.Util;
 
 
 public class MainActivity extends AppCompatActivity
@@ -125,7 +127,7 @@ public class MainActivity extends AppCompatActivity
         });
 
         NavigationView navigationView = findViewById(R.id.nav_view);
-        changeNavMenuItemName(navigationView);
+        UtilFunction.changeNavMenuItemName(navigationView);
         navigationView.setNavigationItemSelectedListener(this);
 
         View header = navigationView.getHeaderView(0);
@@ -585,7 +587,9 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
 
         } else if (id == R.id.nav_manage) {
-            Log.d(TAG, "onNavigationItemSelected: manage");
+            Intent intent = new Intent(this, FindDiscountActivity.class);
+            startActivity(intent);
+
         } else if (id == R.id.nav_share) {
             Log.d(TAG, "onNavigationItemSelected: share");
         } else if (id == R.id.nav_send) {
@@ -598,21 +602,4 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void changeNavMenuItemName(NavigationView navigationView){
-        //Change Navigation Menu item name
-        Menu menu = navigationView.getMenu();
-        MenuItem nav_camara = menu.findItem(R.id.nav_camera);
-        MenuItem nav_gallery = menu.findItem(R.id.nav_gallery);
-        MenuItem nav_slideshow = menu.findItem(R.id.nav_slideshow);
-        MenuItem nav_manage = menu.findItem(R.id.nav_manage);
-        MenuItem nav_share = menu.findItem(R.id.nav_share);
-        MenuItem nav_send = menu.findItem(R.id.nav_send);
-
-        nav_camara.setTitle("Restaurant");
-        nav_gallery.setTitle("Find Event");
-        nav_slideshow.setTitle("My Event");
-        nav_manage.setTitle("Setting");
-        nav_share.setTitle("Profile");
-        nav_send.setTitle("Sign out");
-    }
 }

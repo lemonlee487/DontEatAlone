@@ -13,6 +13,8 @@ public class Discount {
     private String token;
     private String key;
 
+    public Discount(){}
+
     public Discount(String address, String rest_name,
                     String startDate, String startTime, String endDate, String endTime,
                     int numOfPeople, String description, String token, String key) {
@@ -27,6 +29,7 @@ public class Discount {
         this.token = token;
         this.key = key;
     }
+
 
     public String getToken() {
         return token;
@@ -81,7 +84,7 @@ public class Discount {
     }
 
     public void setEndDate(String endDate) {
-        endDate = endDate;
+        this.endDate = endDate;
     }
 
     public String getEndTime() {
@@ -89,7 +92,7 @@ public class Discount {
     }
 
     public void setEndTime(String endTime) {
-        endTime = endTime;
+        this.endTime = endTime;
     }
 
     public int getNumOfPeople() {

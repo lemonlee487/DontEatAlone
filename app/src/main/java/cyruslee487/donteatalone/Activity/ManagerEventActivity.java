@@ -245,6 +245,8 @@ public class ManagerEventActivity extends AppCompatActivity {
                         mAddress, mRestName, mStartDate, mStartTime, mEndDate, mEndTime,
                         mNumPeople, mDescriptionET.getText().toString(), token, key));
 
+                Log.d(TAG, "postEvent: " + mEndDate + " " + mEndTime);
+
                 Snackbar.make(view, "New discount added", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
 

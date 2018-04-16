@@ -64,7 +64,11 @@
 
         <activity
             android:name=".Activity.ManagerMapsActivity"
-            android:label="@string/title_activity_manager_maps"/>
+            android:label="@string/title_activity_manager_maps" />
+        <activity
+            android:name=".Activity.FindDiscountActivity"
+            android:label="@string/title_activity_find_discount"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

@@ -89,7 +89,9 @@ public class FindEventRecyclerViewAdapter extends RecyclerView.Adapter<FindEvent
 
                 //Send FCM to Event host
                 cyruslee487.donteatalone.Model.Notification notification =
-                        new cyruslee487.donteatalone.Model.Notification("CONTENT", "TITLE");
+                        new cyruslee487.donteatalone.Model.Notification(
+                                event.getRestaurant_name() + " On " + event.getDate() + " At " + event.getTime(),
+                                "You have some to eat with");
                 Sender sender = new Sender(Common.currentToken,notification);
                 mAPIService.sendNotification(sender)
                         .enqueue(new Callback<MyResponse>() {
