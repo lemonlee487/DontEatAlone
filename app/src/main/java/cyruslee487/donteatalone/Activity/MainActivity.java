@@ -84,8 +84,8 @@ public class MainActivity extends AppCompatActivity
     private ArrayList<Restaurant> mRestaurants = new ArrayList<>();
     private String mUsername;
 
-        private FirebaseDatabase mFirebaseDatabase;
-        private DatabaseReference mDatabaseReference;
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mDatabaseReference;
     private ChildEventListener mChildEventListener;
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
@@ -259,17 +259,17 @@ public class MainActivity extends AppCompatActivity
             String date = getIntent().getStringExtra(SELECT_DATE);
             String time = getIntent().getStringExtra(SELECT_TIME);
             String token = SharedPrefManager.getInstance(this).getDeviceToken();
+            String email = "";
             if(mUsername.equals(ANONYMOUS)){
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if(user != null) {
                     mUsername = user.getDisplayName();
+                    email = user.getEmail();
                 }
             }
             String key = mDatabaseReference.push().getKey();
             Log.d(TAG, "getIntentFromRestaurantInfoActivity: key => " + key);
-            mDatabaseReference.child("events").child(key).setValue(new Event(key, mUsername, name, address, date, time, token));
-            Log.d(TAG, "onCreate: Set value: " + mUsername + "___"
-                    + name + "___" + address + "___" + date + "___" + time);
+            mDatabaseReference.child("events").child(key).setValue(new Event(key, mUsername, name, address, date, time, token, email));
         }
     }
 
