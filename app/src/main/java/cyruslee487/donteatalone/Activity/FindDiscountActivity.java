@@ -97,20 +97,7 @@ public class FindDiscountActivity extends AppCompatActivity
                 mDiscountFromFirebase.clear();
                 for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
                     Discount discount = postSnapshot.getValue(Discount.class);
-                    if(discount!=null && discount.getEmail().equals(mFirebaseUser.getEmail())){
-                        Log.d(TAG, "onDataChange: Same email");
-                        if(!discount.getToken().equals(mSharedPrefManager.getDeviceToken())){
-                            Log.d(TAG, "onDataChange: Different token");
-                            Discount newDiscount = updateTokenInDiscount(discount);
-                            mDiscountFromFirebase.add(newDiscount);
-                        }else{
-                            Log.d(TAG, "onDataChange: Same Token");
-                            mDiscountFromFirebase.add(discount);
-                        }
-                    }else{
-                        Log.d(TAG, "onDataChange: Different email");
-                        mDiscountFromFirebase.add(discount);
-                    }
+                    mDiscountFromFirebase.add(discount);
                 }
                 mAdapter = new FindDiscountRecyclerViewAdapter(mDiscountFromFirebase, FindDiscountActivity.this);
                 recyclerView.setAdapter(mAdapter);
@@ -121,25 +108,6 @@ public class FindDiscountActivity extends AppCompatActivity
                 Log.d(TAG, "onCancelled: Read failed: " + databaseError.getMessage());
             }
         });
-    }
-
-    private Discount updateTokenInDiscount(Discount discount){
-        Discount newDiscount = new Discount(
-                discount.getAddress(),
-                discount.getRest_name(),
-                discount.getStartDate(),
-                discount.getStartTime(),
-                discount.getEndDate(),
-                discount.getEndTime(),
-                discount.getNumOfPeople(),
-                discount.getDescription(),
-                mSharedPrefManager.getDeviceToken(),
-                discount.getKey(),
-                discount.getEmail()
-        );
-        mDatabaseReference.child(discount.getKey()).setValue(newDiscount);
-        Log.d(TAG, "updateTokenInDiscount: updated: " + newDiscount.getKey());
-        return newDiscount;
     }
 
     private boolean isManager(){

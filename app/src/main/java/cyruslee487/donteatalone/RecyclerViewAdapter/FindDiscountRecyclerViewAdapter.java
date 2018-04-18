@@ -11,6 +11,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.List;
 
 import cyruslee487.donteatalone.Common;
@@ -90,6 +93,27 @@ public class FindDiscountRecyclerViewAdapter extends RecyclerView.Adapter<FindDi
                         });
             }
         });
+    }
+
+    private Discount updateTokenInDiscount(Discount discount){
+        Discount newDiscount = new Discount(
+                discount.getAddress(),
+                discount.getRest_name(),
+                discount.getStartDate(),
+                discount.getStartTime(),
+                discount.getEndDate(),
+                discount.getEndTime(),
+                discount.getNumOfPeople(),
+                discount.getDescription(),
+                discount.getToken(),
+                discount.getKey(),
+                discount.getEmail()
+        );
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference = firebaseDatabase.getReference();
+        databaseReference.child(discount.getKey()).setValue(newDiscount);
+        Log.d(TAG, "updateTokenInDiscount: updated: " + newDiscount.getKey());
+        return newDiscount;
     }
     
     private class insertMyDiscountAsync extends AsyncTask<Discount, Void, Void>{

@@ -3,6 +3,7 @@ package cyruslee487.donteatalone.Activity;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.arch.persistence.room.Database;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -44,9 +45,12 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,6 +61,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cyruslee487.donteatalone.DiscountRoomDatabase.Discount;
 import cyruslee487.donteatalone.EventRoomDatabase.Event;
 import cyruslee487.donteatalone.R;
 import cyruslee487.donteatalone.RecyclerViewAdapter.MainMenuRecyclerViewAdapter;
@@ -140,6 +145,8 @@ public class MainActivity extends AppCompatActivity
 
         new sendTokenAsync().execute();
 
+        new checkTokenInFirebaseAsync().execute();
+
         initBitmaps();
 
         mUsername = ANONYMOUS;
@@ -175,6 +182,104 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
+    }
+
+    private void checkEventToken(){
+        DatabaseReference databaseReference = mFirebaseDatabase.getReference().child("events");
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                    Event event = postSnapshot.getValue(Event.class);
+                    if(event!=null && event.getEmail().equals(mFirebaseUser.getEmail())){
+                        Log.d(TAG, "onDataChange: Event: Same email");
+                        if(!event.getToken().equals(mSharedPrefManager.getDeviceToken())){
+                            Log.d(TAG, "onDataChange: Event Different token");
+                            updateTokenInEvent(event);
+                        }else
+                            Log.d(TAG, "onDataChange: Event: Same Token");
+                    }else
+                        Log.d(TAG, "onDataChange: Event Different email");
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private Event updateTokenInEvent(Event event){
+        Event newEvent = new Event(
+                event.getKey(),
+                event.getUsername(),
+                event.getRestaurant_name(),
+                event.getLocation(),
+                event.getDate(),
+                event.getTime(),
+                mSharedPrefManager.getDeviceToken(),
+                event.getEmail()
+        );
+        mDatabaseReference.child(event.getKey()).setValue(newEvent);
+        Log.d(TAG, "updateTokenInEvent: updated: " + newEvent.getKey());
+        return newEvent;
+    }
+
+    private void checkDiscountToken(){
+        DatabaseReference databaseReference = mFirebaseDatabase.getReference().child("discount");
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                    Discount discount = postSnapshot.getValue(Discount.class);
+                    if(discount!=null && discount.getEmail().equals(mFirebaseUser.getEmail())) {
+                        Log.d(TAG, "onDataChange: Discount: Same email");
+                        if (!discount.getToken().equals(mSharedPrefManager.getDeviceToken())) {
+                            Log.d(TAG, "onDataChange: Discount: Different token");
+                            updateTokenInDiscount(discount);
+                        }else
+                            Log.d(TAG, "onDataChange: Discount: Same token");
+                    }else
+                        Log.d(TAG, "onDataChange: Discount: Different email");
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private Discount updateTokenInDiscount(Discount discount){
+        Discount newDiscount = new Discount(
+                discount.getAddress(),
+                discount.getRest_name(),
+                discount.getStartDate(),
+                discount.getStartTime(),
+                discount.getEndDate(),
+                discount.getEndTime(),
+                discount.getNumOfPeople(),
+                discount.getDescription(),
+                mSharedPrefManager.getDeviceToken(),
+                discount.getKey(),
+                discount.getEmail()
+        );
+        mDatabaseReference.child(discount.getKey()).setValue(newDiscount);
+        Log.d(TAG, "updateTokenInDiscount: updated: " + newDiscount.getKey());
+        return newDiscount;
+    }
+
+    private class checkTokenInFirebaseAsync extends AsyncTask<Void, Void, Void>{
+        @Override
+        protected Void doInBackground(Void... voids) {
+            checkEventToken();
+            checkDiscountToken();
+            return null;
+        }
     }
 
     //Google Service Permission Check

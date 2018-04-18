@@ -93,21 +93,7 @@ public class FindEventActivity extends AppCompatActivity
                 mEventsFromFirebase.clear();
                 for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
                     Event event = postSnapshot.getValue(Event.class);
-                    //Update event's token with same email
-                    if(event!=null && event.getEmail().equals(mFirebaseUser.getEmail())){
-                        Log.d(TAG, "onDataChange: Same email");
-                        if(!event.getToken().equals(mSharedPrefManager.getDeviceToken())){
-                            Log.d(TAG, "onDataChange: Different token");
-                            Event newEvent = updateTokenInEvent(event);
-                            mEventsFromFirebase.add(newEvent);
-                        }else{
-                            Log.d(TAG, "onDataChange: Same Token");
-                            mEventsFromFirebase.add(event);
-                        }
-                    }else{
-                        Log.d(TAG, "onDataChange: Different email");
-                        mEventsFromFirebase.add(event);
-                    }
+                    mEventsFromFirebase.add(event);
                 }
                 mAdapter = new FindEventRecyclerViewAdapter(FindEventActivity.this, mEventsFromFirebase);
                 recyclerView.setAdapter(mAdapter);
@@ -120,22 +106,6 @@ public class FindEventActivity extends AppCompatActivity
         });
 
 
-    }
-
-    private Event updateTokenInEvent(Event event){
-        Event newEvent = new Event(
-                event.getKey(),
-                event.getUsername(),
-                event.getRestaurant_name(),
-                event.getLocation(),
-                event.getDate(),
-                event.getTime(),
-                mSharedPrefManager.getDeviceToken(),
-                event.getEmail()
-        );
-        mDatabaseReference.child(event.getKey()).setValue(newEvent);
-        Log.d(TAG, "updateTokenInEvent: updated: " + newEvent.getKey());
-        return newEvent;
     }
 
     private boolean isManager(){
