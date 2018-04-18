@@ -1,6 +1,7 @@
 package cyruslee487.donteatalone.RecyclerViewAdapter;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,12 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import cyruslee487.donteatalone.Common;
-import cyruslee487.donteatalone.Discount;
+import cyruslee487.donteatalone.DiscountRoomDatabase.Discount;
+import cyruslee487.donteatalone.DiscountRoomDatabase.DiscountDatabase;
 import cyruslee487.donteatalone.Model.MyResponse;
 import cyruslee487.donteatalone.Model.Sender;
 import cyruslee487.donteatalone.R;
@@ -48,8 +50,6 @@ public class FindDiscountRecyclerViewAdapter extends RecyclerView.Adapter<FindDi
         Common.currentToken = discount.getToken();
         mAPIService = Common.getFCMClient();
 
-        Log.d(TAG, "onBindViewHolder: " + discount.getEndDate() + " " + discount.getEndTime());
-
         holder.restname_fd.setText(discount.getRest_name());
         holder.address_fd.setText(discount.getAddress());
         holder.startdate_fd.setText(discount.getStartDate());
@@ -61,6 +61,11 @@ public class FindDiscountRecyclerViewAdapter extends RecyclerView.Adapter<FindDi
         holder.relative_fd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                new insertMyDiscountAsync(mContext).execute(discount);
+
+                Toast.makeText(mContext, "Check -My Discount- for new added discount", Toast.LENGTH_LONG).show();
+
                 //Send FCM to Event host
                 cyruslee487.donteatalone.Model.Notification notification =
                         new cyruslee487.donteatalone.Model.Notification(
@@ -85,6 +90,22 @@ public class FindDiscountRecyclerViewAdapter extends RecyclerView.Adapter<FindDi
                         });
             }
         });
+    }
+    
+    private class insertMyDiscountAsync extends AsyncTask<Discount, Void, Void>{
+        private DiscountDatabase discountDatabase;
+        
+        private insertMyDiscountAsync(Context mContext){
+            discountDatabase = DiscountDatabase.getDatabase(mContext);
+        }
+
+
+        @Override
+        protected Void doInBackground(Discount... discounts) {
+            discountDatabase.discountDao().insert(discounts);
+            Log.d(TAG, "doInBackground: inserted discount to discount database");
+            return null;
+        }
     }
 
     @Override

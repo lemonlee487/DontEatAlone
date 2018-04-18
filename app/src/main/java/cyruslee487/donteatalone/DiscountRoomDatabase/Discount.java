@@ -1,17 +1,46 @@
-package cyruslee487.donteatalone;
+package cyruslee487.donteatalone.DiscountRoomDatabase;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+
+@Entity
 public class Discount {
 
+    @PrimaryKey(autoGenerate = true)
+    private int eid;
+
+    @ColumnInfo(name = "address")
     private String address;
+
+    @ColumnInfo(name = "rest_name")
     private String rest_name;
+
+    @ColumnInfo(name = "start_date")
     private String startDate;
+
+    @ColumnInfo(name = "start_time")
     private String startTime;
+
+    @ColumnInfo(name = "end_date")
     private String endDate;
+
+    @ColumnInfo(name = "end_time")
     private String endTime;
+
+    @ColumnInfo(name = "num_of_people")
     private int numOfPeople;
+
+    @ColumnInfo(name = "description")
     private String description;
+
+    @ColumnInfo(name = "token")
     private String token;
+
+    @ColumnInfo(name = "key")
     private String key;
+
+    @ColumnInfo(name = "email")
     private String email;
 
     public Discount(){}
@@ -30,6 +59,14 @@ public class Discount {
         this.token = token;
         this.key = key;
         this.email = email;
+    }
+
+    public int getEid() {
+        return eid;
+    }
+
+    public void setEid(int eid) {
+        this.eid = eid;
     }
 
     public String getEmail() {

@@ -7,6 +7,7 @@ import android.arch.persistence.room.PrimaryKey;
 
 @Entity
 public class Event {
+
     @PrimaryKey(autoGenerate = true)
     private int eid;
 

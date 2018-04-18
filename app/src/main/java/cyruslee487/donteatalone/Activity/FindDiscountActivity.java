@@ -28,11 +28,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-import cyruslee487.donteatalone.Discount;
-import cyruslee487.donteatalone.EventRoomDatabase.Event;
+import cyruslee487.donteatalone.DiscountRoomDatabase.Discount;
 import cyruslee487.donteatalone.R;
 import cyruslee487.donteatalone.RecyclerViewAdapter.FindDiscountRecyclerViewAdapter;
-import cyruslee487.donteatalone.RecyclerViewAdapter.FindEventRecyclerViewAdapter;
 import cyruslee487.donteatalone.SharedPrefManager;
 import cyruslee487.donteatalone.UtilFunction;
 
