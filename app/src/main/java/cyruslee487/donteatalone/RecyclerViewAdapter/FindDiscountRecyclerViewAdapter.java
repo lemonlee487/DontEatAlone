@@ -52,6 +52,8 @@ public class FindDiscountRecyclerViewAdapter extends RecyclerView.Adapter<FindDi
         final Discount discount = mDiscountList.get(position);
         Common.currentToken = discount.getToken();
         mAPIService = Common.getFCMClient();
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        final DatabaseReference databaseReference = firebaseDatabase.getReference().child("discount");
 
         holder.restname_fd.setText(discount.getRest_name());
         holder.address_fd.setText(discount.getAddress());
@@ -64,38 +66,51 @@ public class FindDiscountRecyclerViewAdapter extends RecyclerView.Adapter<FindDi
         holder.relative_fd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //Change number of people upon clicking
+                boolean result = updateNumOfPeople(discount, databaseReference);
+                if(result == true){
+                    //Change UI
+                    //Insert selected discount to room database
+                    new insertMyDiscountAsync(mContext).execute(discount);
+                    Toast.makeText(mContext, "Check -My Discount- for new added discount", Toast.LENGTH_LONG).show();
 
-                new insertMyDiscountAsync(mContext).execute(discount);
-
-                Toast.makeText(mContext, "Check -My Discount- for new added discount", Toast.LENGTH_LONG).show();
-
-                //Send FCM to Event host
-                cyruslee487.donteatalone.Model.Notification notification =
-                        new cyruslee487.donteatalone.Model.Notification(
-                                "People need: " + discount.getNumOfPeople(),
-                                "Someone has claimed this discount");
-                Sender sender = new Sender(Common.currentToken,notification);
-                mAPIService.sendNotification(sender)
-                        .enqueue(new Callback<MyResponse>() {
-                            @Override
-                            public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-                                if(response.body().success == 1){
-                                    Log.d(TAG, "onResponse: FindDiscountRecyclerAdapter: Success");
-                                }else{
-                                    Log.d(TAG, "onResponse: FindDiscountRecyclerAdapter: Failed");
+                    //Send FCM to Event host
+                    cyruslee487.donteatalone.Model.Notification notification =
+                            new cyruslee487.donteatalone.Model.Notification(
+                                    "People need: " + discount.getNumOfPeople(),
+                                    "Someone has claimed this discount");
+                    Sender sender = new Sender(Common.currentToken,notification);
+                    mAPIService.sendNotification(sender)
+                            .enqueue(new Callback<MyResponse>() {
+                                @Override
+                                public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                                    if(response.body().success == 1){
+                                        Log.d(TAG, "onResponse: FindDiscountRecyclerAdapter: Success");
+                                    }else{
+                                        Log.d(TAG, "onResponse: FindDiscountRecyclerAdapter: Failed");
+                                    }
                                 }
-                            }
 
-                            @Override
-                            public void onFailure(Call<MyResponse> call, Throwable t) {
-                                Log.e(TAG, "onFailure: Error", t.getCause());
-                            }
-                        });
+                                @Override
+                                public void onFailure(Call<MyResponse> call, Throwable t) {
+                                    Log.e(TAG, "onFailure: Error", t.getCause());
+                                }
+                            });
+
+                }else{
+                    Toast.makeText(mContext, "No more room for this discount", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
 
-    private Discount updateTokenInDiscount(Discount discount){
+    private boolean updateNumOfPeople(Discount discount, DatabaseReference databaseReference){
+        int people = discount.getNumOfPeople();
+        if(people != 0)
+            people -= 1;
+        else
+            return false;
+
         Discount newDiscount = new Discount(
                 discount.getAddress(),
                 discount.getRest_name(),
@@ -103,17 +118,15 @@ public class FindDiscountRecyclerViewAdapter extends RecyclerView.Adapter<FindDi
                 discount.getStartTime(),
                 discount.getEndDate(),
                 discount.getEndTime(),
-                discount.getNumOfPeople(),
+                people,
                 discount.getDescription(),
                 discount.getToken(),
                 discount.getKey(),
                 discount.getEmail()
         );
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference databaseReference = firebaseDatabase.getReference();
         databaseReference.child(discount.getKey()).setValue(newDiscount);
-        Log.d(TAG, "updateTokenInDiscount: updated: " + newDiscount.getKey());
-        return newDiscount;
+        Log.d(TAG, "updateTokenInDiscount: updated num of people: " + newDiscount.getKey());
+        return true;
     }
     
     private class insertMyDiscountAsync extends AsyncTask<Discount, Void, Void>{
