@@ -108,10 +108,9 @@ public class FindEventActivity extends AppCompatActivity
                         Log.d(TAG, "onDataChange: Different email");
                         mEventsFromFirebase.add(event);
                     }
-
-                    mAdapter = new FindEventRecyclerViewAdapter(FindEventActivity.this, mEventsFromFirebase);
-                    recyclerView.setAdapter(mAdapter);
                 }
+                mAdapter = new FindEventRecyclerViewAdapter(FindEventActivity.this, mEventsFromFirebase);
+                recyclerView.setAdapter(mAdapter);
             }
 
             @Override
@@ -124,17 +123,17 @@ public class FindEventActivity extends AppCompatActivity
     }
 
     private Event updateTokenInEvent(Event event){
-        String key, username, rest_name, address, date, time, token, email;
-        key = event.getKey();
-        username = event.getUsername();
-        rest_name = event.getRestaurant_name();
-        address = event.getLocation();
-        date = event.getDate();
-        time = event.getTime();
-        email = event.getEmail();
-        token = mSharedPrefManager.getDeviceToken();
-        Event newEvent = new Event(key, username, rest_name, address, date, time, token ,email);
-        mDatabaseReference.child(key).setValue(newEvent);
+        Event newEvent = new Event(
+                event.getKey(),
+                event.getUsername(),
+                event.getRestaurant_name(),
+                event.getLocation(),
+                event.getDate(),
+                event.getTime(),
+                mSharedPrefManager.getDeviceToken(),
+                event.getEmail()
+        );
+        mDatabaseReference.child(event.getKey()).setValue(newEvent);
         Log.d(TAG, "updateTokenInEvent: updated: " + newEvent.getKey());
         return newEvent;
     }

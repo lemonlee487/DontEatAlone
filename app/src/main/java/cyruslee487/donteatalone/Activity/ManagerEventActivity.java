@@ -19,6 +19,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -58,7 +60,8 @@ public class ManagerEventActivity extends AppCompatActivity {
     private DatePickerDialog.OnDateSetListener mDateSetListener;
     private TimePickerDialog.OnTimeSetListener mTimeSetListener;
     private Context mContext;
-
+    private FirebaseAuth mFirebaseAuth = FirebaseAuth.getInstance();
+    private FirebaseUser mFirebaseUser = mFirebaseAuth.getCurrentUser();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +78,7 @@ public class ManagerEventActivity extends AppCompatActivity {
 
         mAddress = getIntent().getStringExtra("Address");
         Log.d(TAG, "onCreate: ManagerEventActivity: " + mAddress);
+
     }
 
     public void pickStart(View view){
@@ -243,7 +247,8 @@ public class ManagerEventActivity extends AppCompatActivity {
             if(key!= null && token != null) {
                 mDatabaseReference.child("discount").child(key).setValue(new Discount(
                         mAddress, mRestName, mStartDate, mStartTime, mEndDate, mEndTime,
-                        mNumPeople, mDescriptionET.getText().toString(), token, key));
+                        mNumPeople, mDescriptionET.getText().toString(), token, key,
+                        mFirebaseUser.getEmail()));
 
                 Log.d(TAG, "postEvent: " + mEndDate + " " + mEndTime);
 

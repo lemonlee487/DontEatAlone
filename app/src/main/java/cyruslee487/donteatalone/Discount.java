@@ -12,12 +12,13 @@ public class Discount {
     private String description;
     private String token;
     private String key;
+    private String email;
 
     public Discount(){}
 
     public Discount(String address, String rest_name,
                     String startDate, String startTime, String endDate, String endTime,
-                    int numOfPeople, String description, String token, String key) {
+                    int numOfPeople, String description, String token, String key, String email) {
         this.address = address;
         this.rest_name = rest_name;
         this.startDate = startDate;
@@ -28,8 +29,16 @@ public class Discount {
         this.description = description;
         this.token = token;
         this.key = key;
+        this.email = email;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public String getToken() {
         return token;
