@@ -1,6 +1,8 @@
 package cyruslee487.donteatalone.RecyclerViewAdapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -11,6 +13,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -23,6 +27,7 @@ import cyruslee487.donteatalone.Model.MyResponse;
 import cyruslee487.donteatalone.Model.Sender;
 import cyruslee487.donteatalone.R;
 import cyruslee487.donteatalone.Remote.APIService;
+import cyruslee487.donteatalone.SharedPrefManager;
 import cyruslee487.donteatalone.UtilFunction;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -107,6 +112,65 @@ public class FindDiscountRecyclerViewAdapter extends RecyclerView.Adapter<FindDi
                 }
             }
         });
+
+        //Long click listener for Manager only
+        holder.relative_fd.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if(isManager(mContext)){
+                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int decision) {
+                            switch(decision){
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    //Intent to Manager Activity with current result
+                                    //Send action to Activity, "Modify"
+                                    break;
+
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    String key = discount.getKey();
+                                    databaseReference.child(key).removeValue();
+                                    Toast.makeText(mContext, "Discount removed", Toast.LENGTH_SHORT).show();
+                                    break;
+                            }
+                        }
+                    };
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                    builder.setMessage("What do you want to do with this discount")
+                            .setPositiveButton("Extend", dialogClickListener)
+                            .setNegativeButton("Delete", dialogClickListener)
+                            .show();
+                }
+
+                return true;
+            }
+        });
+    }
+
+    private boolean isManager(Context context){
+        SharedPrefManager mSharedPrefManager = SharedPrefManager.getInstance(context);
+        FirebaseAuth mFirebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser mFirebaseUser = mFirebaseAuth.getCurrentUser();
+
+        String status = mSharedPrefManager.getOwnerStatus();
+        String email = mSharedPrefManager.getOwnerEmail();
+        String user_email = mFirebaseUser.getEmail();
+
+        if(status.equals("Restaurant Manager")){
+            if(email.equals(user_email)){
+                Log.d(TAG, "isManager: Status: True, Email: Match");
+                return true;
+            }else{
+                Log.d(TAG, "isManager: Status: True, Email: Not match");
+                mSharedPrefManager.saveOwnerStatus("Guest", user_email);
+                return false;
+            }
+        }else{
+            Log.d(TAG, "isManager: Status: False");
+            mSharedPrefManager.saveOwnerStatus("Guest", user_email);
+            return false;
+        }
     }
 
     private boolean updateNumOfPeople(Discount discount, DatabaseReference databaseReference){
