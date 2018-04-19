@@ -207,6 +207,7 @@ public class RestaurantInfoActivity extends FragmentActivity implements OnMapRea
         intent.putExtra("select_time", time);
         intent.putExtra(IMAGE_ADDRESS, mImageAddress);
         intent.putExtra(IMAGE_NAME, mImageName);
+        Toast.makeText(mContext, "You have posted your event to the board", Toast.LENGTH_SHORT).show();
         startActivity(intent);
         finish();
     }

@@ -95,7 +95,7 @@ public class FindEventActivity extends AppCompatActivity
                 for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
                     Event event = postSnapshot.getValue(Event.class);
                     if(event!=null) {
-                        if(checkExpiredEvent(event))
+                        if(UtilFunction.checkExpiredEvent(event))
                             mEventsFromFirebase.add(event);
                         else{
                             String key = event.getKey();
@@ -114,38 +114,6 @@ public class FindEventActivity extends AppCompatActivity
         });
 
 
-    }
-
-    private boolean checkExpiredEvent(Event event){
-        String[] sdate = event.getDate().split("/");
-        String[] stime = event.getTime().split(":");
-        Calendar cal = Calendar.getInstance();
-        int year = cal.get(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH)+1;
-        int day = cal.get(Calendar.DAY_OF_MONTH);
-        int hour = cal.get(Calendar.HOUR);
-        int minute = cal.get(Calendar.MINUTE);
-        int event_concat_date = Integer.parseInt(sdate[0]+sdate[1]+sdate[2]);
-        int event_concat_time = Integer.parseInt(stime[0]+stime[1]);
-        int current_concat_date = Integer.parseInt(""+year+month+day);
-        int current_concat_time = Integer.parseInt(""+hour+minute);
-
-        if(event_concat_date > current_concat_date){
-            Log.d(TAG, "checkExpiredEvent: Event date > current date");
-            return true;
-        }else if(event_concat_date == current_concat_date){
-            Log.d(TAG, "checkExpiredEvent: Event date == current date");
-            if(event_concat_time >= current_concat_time){
-                Log.d(TAG, "checkExpiredEvent: Event time > current time");
-                return true;
-            }else{
-                Log.d(TAG, "checkExpiredEvent: Event time < current time");
-                return false;
-            }
-        }else {
-            Log.d(TAG, "checkExpiredEvent: Event date < current date");
-            return false;
-        }
     }
 
     private boolean isManager(){

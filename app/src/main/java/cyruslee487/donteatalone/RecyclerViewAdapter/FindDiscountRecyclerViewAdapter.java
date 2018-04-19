@@ -23,6 +23,7 @@ import cyruslee487.donteatalone.Model.MyResponse;
 import cyruslee487.donteatalone.Model.Sender;
 import cyruslee487.donteatalone.R;
 import cyruslee487.donteatalone.Remote.APIService;
+import cyruslee487.donteatalone.UtilFunction;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -66,39 +67,43 @@ public class FindDiscountRecyclerViewAdapter extends RecyclerView.Adapter<FindDi
         holder.relative_fd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Change number of people upon clicking
-                boolean result = updateNumOfPeople(discount, databaseReference);
-                if(result == true){
-                    //Change UI
-                    //Insert selected discount to room database
-                    new insertMyDiscountAsync(mContext).execute(discount);
-                    Toast.makeText(mContext, "Check -My Discount- for new added discount", Toast.LENGTH_LONG).show();
+                //Check if discount has expired
+                if(UtilFunction.checkExpiredDiscount(discount)){
+                    //Change number of people upon clicking
+                    boolean result = updateNumOfPeople(discount, databaseReference);
+                    if(result == true) {
+                        //Change UI
+                        //Insert selected discount to room database
+                        new insertMyDiscountAsync(mContext).execute(discount);
+                        Toast.makeText(mContext, "Check -My Discount- for new added discount", Toast.LENGTH_LONG).show();
 
-                    //Send FCM to Event host
-                    cyruslee487.donteatalone.Model.Notification notification =
-                            new cyruslee487.donteatalone.Model.Notification(
-                                    "People need: " + discount.getNumOfPeople(),
-                                    "Someone has claimed this discount");
-                    Sender sender = new Sender(Common.currentToken,notification);
-                    mAPIService.sendNotification(sender)
-                            .enqueue(new Callback<MyResponse>() {
-                                @Override
-                                public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-                                    if(response.body().success == 1){
-                                        Log.d(TAG, "onResponse: FindDiscountRecyclerAdapter: Success");
-                                    }else{
-                                        Log.d(TAG, "onResponse: FindDiscountRecyclerAdapter: Failed");
+                        //Send FCM to Event host
+                        cyruslee487.donteatalone.Model.Notification notification =
+                                new cyruslee487.donteatalone.Model.Notification(
+                                        "People need: " + discount.getNumOfPeople(),
+                                        "Someone has claimed this discount");
+                        Sender sender = new Sender(Common.currentToken, notification);
+                        mAPIService.sendNotification(sender)
+                                .enqueue(new Callback<MyResponse>() {
+                                    @Override
+                                    public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                                        if (response.body().success == 1) {
+                                            Log.d(TAG, "onResponse: FindDiscountRecyclerAdapter: Success");
+                                        } else {
+                                            Log.d(TAG, "onResponse: FindDiscountRecyclerAdapter: Failed");
+                                        }
                                     }
-                                }
 
-                                @Override
-                                public void onFailure(Call<MyResponse> call, Throwable t) {
-                                    Log.e(TAG, "onFailure: Error", t.getCause());
-                                }
-                            });
-
+                                    @Override
+                                    public void onFailure(Call<MyResponse> call, Throwable t) {
+                                        Log.e(TAG, "onFailure: Error", t.getCause());
+                                    }
+                                });
+                    }else{
+                        Toast.makeText(mContext, "No more room for this discount", Toast.LENGTH_SHORT).show();
+                    }
                 }else{
-                    Toast.makeText(mContext, "No more room for this discount", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "This discount has expired", Toast.LENGTH_SHORT).show();
                 }
             }
         });

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -64,7 +65,6 @@ public class MainMenuRecyclerViewAdapter extends RecyclerView.Adapter<MainMenuRe
         holder.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "onClick: " + restaurant.getName());
                 Intent intent = new Intent(mContext ,RestaurantInfoActivity.class);
 
                 intent.putExtra(IMAGE_URL, restaurant.getImageUrl());

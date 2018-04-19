@@ -139,6 +139,12 @@ public class MainActivity extends AppCompatActivity
         TextView title = header.findViewById(R.id.nav_profile_title);
         TextView detail = header.findViewById(R.id.nav_profile_detail);
 
+        mUsername = ANONYMOUS;
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mDatabaseReference = mFirebaseDatabase.getReference();
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        mSharedPrefManager = SharedPrefManager.getInstance(this);
+
         if(isServiceOk()){
             getPermission();
         }
@@ -148,12 +154,6 @@ public class MainActivity extends AppCompatActivity
         new checkTokenInFirebaseAsync().execute();
 
         initBitmaps();
-
-        mUsername = ANONYMOUS;
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mDatabaseReference = mFirebaseDatabase.getReference();
-        mFirebaseAuth = FirebaseAuth.getInstance();
-        mSharedPrefManager = SharedPrefManager.getInstance(this);
 
         getIntentFromRestaurantInfoActivity();
 
@@ -182,8 +182,47 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
+        Thread thread = new Thread(){
+            @Override
+            public void run() {
+                while(!isInterrupted()){
+                    try{
+                        Thread.sleep(60 * 1000);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mDatabaseReference.child("events").addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
+                                            Event event = postSnapshot.getValue(Event.class);
+                                            if(event!=null) {
+                                                Log.d(TAG, "run: In thread check event " + event.getRestaurant_name());
+                                                if(!UtilFunction.checkExpiredEvent(event)){
+                                                    String key = event.getKey();
+                                                    mDatabaseReference.child(key).removeValue();
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+                        });
+                    }catch(InterruptedException e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };  thread.start();
+
     }
 
+    //Update token in Event and Discount
     private void checkEventToken(){
         DatabaseReference databaseReference = mFirebaseDatabase.getReference().child("events");
         databaseReference.addValueEventListener(new ValueEventListener() {
@@ -211,7 +250,7 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private Event updateTokenInEvent(Event event){
+    private void updateTokenInEvent(Event event){
         Event newEvent = new Event(
                 event.getKey(),
                 event.getUsername(),
@@ -224,7 +263,6 @@ public class MainActivity extends AppCompatActivity
         );
         mDatabaseReference.child(event.getKey()).setValue(newEvent);
         Log.d(TAG, "updateTokenInEvent: updated: " + newEvent.getKey());
-        return newEvent;
     }
 
     private void checkDiscountToken(){
@@ -254,7 +292,7 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private Discount updateTokenInDiscount(Discount discount){
+    private void updateTokenInDiscount(Discount discount){
         Discount newDiscount = new Discount(
                 discount.getAddress(),
                 discount.getRest_name(),
@@ -270,7 +308,6 @@ public class MainActivity extends AppCompatActivity
         );
         mDatabaseReference.child(discount.getKey()).setValue(newDiscount);
         Log.d(TAG, "updateTokenInDiscount: updated: " + newDiscount.getKey());
-        return newDiscount;
     }
 
     private class checkTokenInFirebaseAsync extends AsyncTask<Void, Void, Void>{
@@ -354,6 +391,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    //Get event from restaurant Info and upload to firebase
     private void getIntentFromRestaurantInfoActivity(){
         if(getIntent().hasExtra(IMAGE_NAME)
                 && getIntent().hasExtra(IMAGE_ADDRESS)
