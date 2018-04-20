@@ -13,8 +13,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
@@ -37,6 +40,7 @@ public class MyDiscountRecyclerViewAdapter extends RecyclerView.Adapter<MyDiscou
     private List<Discount> mDiscountList;
     private Context mContext;
     private APIService mAPIService;
+    private int mPeople;
 
     public MyDiscountRecyclerViewAdapter(List<Discount> mDiscountList, Context mContext) {
         this.mDiscountList = mDiscountList;
@@ -64,24 +68,24 @@ public class MyDiscountRecyclerViewAdapter extends RecyclerView.Adapter<MyDiscou
         holder.starttime_fd.setText(discount.getStartTime());
         holder.enddate_fd.setText(discount.getEndDate());
         holder.endtime_fd.setText(discount.getEndTime());
-        holder.people_fd.setText(String.valueOf(discount.getNumOfPeople()));
+        holder.people_fd.setVisibility(View.INVISIBLE);
+        holder.people_tv.setVisibility(View.INVISIBLE);
 
         holder.relative_fd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //updateNumOfPeople(discount.getKey(), databaseReference);
                 DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int decision) {
                         switch(decision){
                             case DialogInterface.BUTTON_POSITIVE:
-                                Log.d(TAG, "removeItem: discount room database size: " + mDiscountList.size());
-                                updateNumOfPeople(discount, databaseReference);
-                                Toast.makeText(mContext, "You have remove this discount", Toast.LENGTH_SHORT).show();
                                 //Send FCM to Event host
                                 cyruslee487.donteatalone.Model.Notification notification =
                                         new cyruslee487.donteatalone.Model.Notification(
-                                                "People need: " + discount.getNumOfPeople(),
+                                                ":(",
                                                 "Someone has give up the discount");
+
                                 Sender sender = new Sender(Common.currentToken, notification);
                                 mAPIService.sendNotification(sender)
                                         .enqueue(new Callback<MyResponse>() {
@@ -94,7 +98,9 @@ public class MyDiscountRecyclerViewAdapter extends RecyclerView.Adapter<MyDiscou
                                             public void onFailure(Call<MyResponse> call, Throwable t) {
                                                 Log.e(TAG, "onFailure: Error", t.getCause()); }
                                             });
+                                //Remove discount from book room database
                                 removeItem(discount);
+                                Toast.makeText(mContext, "You have remove this discount", Toast.LENGTH_SHORT).show();
                                 break;
 
                             case DialogInterface.BUTTON_NEGATIVE:
@@ -123,7 +129,7 @@ public class MyDiscountRecyclerViewAdapter extends RecyclerView.Adapter<MyDiscou
         private Discount discount;
         private DiscountDatabase discountDatabase;
 
-        public removeDiscountFromRoom(Discount discount, Context context) {
+        private removeDiscountFromRoom(Discount discount, Context context) {
             this.discount = discount;
             discountDatabase = DiscountDatabase.getDatabase(context);
         }
@@ -135,23 +141,6 @@ public class MyDiscountRecyclerViewAdapter extends RecyclerView.Adapter<MyDiscou
         }
     }
 
-    private void updateNumOfPeople(Discount discount, DatabaseReference databaseReference){
-        Discount newDiscount = new Discount(
-                discount.getAddress(),
-                discount.getRest_name(),
-                discount.getStartDate(),
-                discount.getStartTime(),
-                discount.getEndDate(),
-                discount.getEndTime(),
-                discount.getNumOfPeople()+1,
-                discount.getDescription(),
-                discount.getToken(),
-                discount.getKey(),
-                discount.getEmail()
-        );
-        databaseReference.child(discount.getKey()).setValue(newDiscount);
-        Log.d(TAG, "updateTokenInDiscount: updated num of people: " + newDiscount.getKey());
-    }
     @Override
     public int getItemCount() {
         return mDiscountList.size();
@@ -159,7 +148,7 @@ public class MyDiscountRecyclerViewAdapter extends RecyclerView.Adapter<MyDiscou
 
     public class MDViewHolder extends RecyclerView.ViewHolder{
         TextView restname_fd, address_fd, startdate_fd, starttime_fd,
-                enddate_fd, endtime_fd, people_fd;
+                enddate_fd, endtime_fd, people_fd, people_tv;
 
         RelativeLayout relative_fd;
 
@@ -171,6 +160,7 @@ public class MyDiscountRecyclerViewAdapter extends RecyclerView.Adapter<MyDiscou
             starttime_fd = itemView.findViewById(R.id.start_time_discount_list_item);
             enddate_fd = itemView.findViewById(R.id.end_date_discount_list_item);
             endtime_fd = itemView.findViewById(R.id.end_time_discount_list_item);
+            people_tv = itemView.findViewById(R.id.people_need_tv);
             people_fd = itemView.findViewById(R.id.people_num_discount_list_item);
             relative_fd = itemView.findViewById(R.id.relative_discount_list_item);
         }

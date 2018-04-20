@@ -26,7 +26,7 @@ public class UtilFunction {
 
         nav_camara.setTitle("Restaurant");
         nav_gallery.setTitle("Find Event");
-        nav_slideshow.setTitle("Discount??");
+        nav_slideshow.setTitle("Get Discount");
         nav_manage.setTitle("My Event");
         nav_share.setTitle("Profile");
         nav_send.setTitle("Sign out");
@@ -47,20 +47,20 @@ public class UtilFunction {
         int current_concat_time = Integer.parseInt(""+hour+minute);
 
         if(event_concat_date > current_concat_date){
-            Log.d(TAG, "checkExpiredEvent: Event date > current date");
+            //Log.d(TAG, "checkExpiredEvent: Event date > current date");
             return true;
         }else if(event_concat_date == current_concat_date){
-            Log.d(TAG, "checkExpiredEvent: Event date == current date");
+            //Log.d(TAG, "checkExpiredEvent: Event date == current date");
             //Log.d(TAG, "checkExpiredEvent: " + event_concat_time + " " + current_concat_time);
             if(event_concat_time >= current_concat_time){
-                Log.d(TAG, "checkExpiredEvent: Event time >= current time");
+                //Log.d(TAG, "checkExpiredEvent: Event time >= current time");
                 return true;
             }else{
-                Log.d(TAG, "checkExpiredEvent: Event time < current time");
+                //Log.d(TAG, "checkExpiredEvent: Event time < current time");
                 return false;
             }
         }else {
-            Log.d(TAG, "checkExpiredEvent: Event date < current date");
+            //Log.d(TAG, "checkExpiredEvent: Event date < current date");
             return false;
         }
     }

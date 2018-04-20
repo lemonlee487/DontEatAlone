@@ -83,6 +83,8 @@ public class FindDiscountRecyclerViewAdapter extends RecyclerView.Adapter<FindDi
                                     //Change number of people upon clicking
                                     if(updateNumOfPeople(discount, databaseReference)) {
                                         //Insert selected discount to room database
+                                        discount.setNumOfPeople(discount.getNumOfPeople()-1);
+                                        Log.d(TAG, "onClick: " + discount.getNumOfPeople());
                                         new insertMyDiscountAsync(mContext).execute(discount);
                                         Toast.makeText(mContext, "Check -My Discount- for new added discount", Toast.LENGTH_LONG).show();
 

@@ -197,7 +197,6 @@ public class MainActivity extends AppCompatActivity
                                         for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
                                             Event event = postSnapshot.getValue(Event.class);
                                             if(event!=null) {
-                                                Log.d(TAG, "run: In thread check event " + event.getRestaurant_name());
                                                 if(!UtilFunction.checkExpiredEvent(event)){
                                                     String key = event.getKey();
                                                     mDatabaseReference.child(key).removeValue();
@@ -231,14 +230,12 @@ public class MainActivity extends AppCompatActivity
                 for(DataSnapshot postSnapshot: dataSnapshot.getChildren()){
                     Event event = postSnapshot.getValue(Event.class);
                     if(event!=null && event.getEmail().equals(mFirebaseUser.getEmail())){
-                        Log.d(TAG, "onDataChange: Event: Same email");
+                        //Log.d(TAG, "onDataChange: Event: Same email");
                         if(!event.getToken().equals(mSharedPrefManager.getDeviceToken())){
-                            Log.d(TAG, "onDataChange: Event Different token");
+                            //Log.d(TAG, "onDataChange: Event Different token");
                             updateTokenInEvent(event);
-                        }else
-                            Log.d(TAG, "onDataChange: Event: Same Token");
-                    }else
-                        Log.d(TAG, "onDataChange: Event Different email");
+                        }
+                    }
 
                 }
             }
@@ -273,14 +270,12 @@ public class MainActivity extends AppCompatActivity
                 for(DataSnapshot postSnapshot: dataSnapshot.getChildren()){
                     Discount discount = postSnapshot.getValue(Discount.class);
                     if(discount!=null && discount.getEmail().equals(mFirebaseUser.getEmail())) {
-                        Log.d(TAG, "onDataChange: Discount: Same email");
+                        //Log.d(TAG, "onDataChange: Discount: Same email");
                         if (!discount.getToken().equals(mSharedPrefManager.getDeviceToken())) {
-                            Log.d(TAG, "onDataChange: Discount: Different token");
+                            //Log.d(TAG, "onDataChange: Discount: Different token");
                             updateTokenInDiscount(discount);
-                        }else
-                            Log.d(TAG, "onDataChange: Discount: Same token");
-                    }else
-                        Log.d(TAG, "onDataChange: Discount: Different email");
+                        }
+                    }
 
                 }
             }
@@ -688,15 +683,15 @@ public class MainActivity extends AppCompatActivity
 
         if(status.equals("Restaurant Manager")){
             if(email.equals(user_email)){
-                Log.d(TAG, "isManager: Status: True, Email: Match");
+                //Log.d(TAG, "isManager: Status: True, Email: Match");
                 return true;
             }else{
-                Log.d(TAG, "isManager: Status: True, Email: Not match");
+                //Log.d(TAG, "isManager: Status: True, Email: Not match");
                 mSharedPrefManager.saveOwnerStatus("Guest", user_email);
                 return false;
             }
         }else{
-            Log.d(TAG, "isManager: Status: False");
+            //Log.d(TAG, "isManager: Status: False");
             mSharedPrefManager.saveOwnerStatus("Guest", user_email);
             return false;
         }
