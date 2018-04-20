@@ -13,6 +13,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.List;
 
 import cyruslee487.donteatalone.Common;
@@ -50,6 +53,10 @@ public class MyDiscountRecyclerViewAdapter extends RecyclerView.Adapter<MyDiscou
     @Override
     public void onBindViewHolder(MDViewHolder holder, int position) {
         final Discount discount = mDiscountList.get(position);
+        Common.currentToken = discount.getToken();
+        mAPIService = Common.getFCMClient();
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        final DatabaseReference databaseReference = firebaseDatabase.getReference().child("discount");
 
         holder.restname_fd.setText(discount.getRest_name());
         holder.address_fd.setText(discount.getAddress());
@@ -67,14 +74,14 @@ public class MyDiscountRecyclerViewAdapter extends RecyclerView.Adapter<MyDiscou
                     public void onClick(DialogInterface dialogInterface, int decision) {
                         switch(decision){
                             case DialogInterface.BUTTON_POSITIVE:
-                                removeItem(discount);
+                                Log.d(TAG, "removeItem: discount room database size: " + mDiscountList.size());
+                                updateNumOfPeople(discount, databaseReference);
                                 Toast.makeText(mContext, "You have remove this discount", Toast.LENGTH_SHORT).show();
                                 //Send FCM to Event host
-                                /*
                                 cyruslee487.donteatalone.Model.Notification notification =
                                         new cyruslee487.donteatalone.Model.Notification(
                                                 "People need: " + discount.getNumOfPeople(),
-                                                "Someone has claimed this discount");
+                                                "Someone has give up the discount");
                                 Sender sender = new Sender(Common.currentToken, notification);
                                 mAPIService.sendNotification(sender)
                                         .enqueue(new Callback<MyResponse>() {
@@ -82,10 +89,12 @@ public class MyDiscountRecyclerViewAdapter extends RecyclerView.Adapter<MyDiscou
                                             public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
                                                 if (response.body().success == 1) {
                                                     Log.d(TAG, "onResponse: FindDiscountRecyclerAdapter: Success"); } else {
-                                                    Log.d(TAG, "onResponse: FindDiscountRecyclerAdapter: Failed"); } }@Override
+                                                    Log.d(TAG, "onResponse: FindDiscountRecyclerAdapter: Failed"); } }
+                                                    @Override
                                             public void onFailure(Call<MyResponse> call, Throwable t) {
                                                 Log.e(TAG, "onFailure: Error", t.getCause()); }
-                                            });*/
+                                            });
+                                removeItem(discount);
                                 break;
 
                             case DialogInterface.BUTTON_NEGATIVE:
@@ -104,12 +113,11 @@ public class MyDiscountRecyclerViewAdapter extends RecyclerView.Adapter<MyDiscou
     }
 
     private void removeItem(Discount discount){
-        new removeDiscountFromRoom(discount, mContext);
+        new removeDiscountFromRoom(discount, mContext).execute();
         int position = mDiscountList.indexOf(discount);
         mDiscountList.remove(position);
         notifyItemRemoved(position);
     }
-
 
     private class removeDiscountFromRoom extends AsyncTask<Void, Void, Void>{
         private Discount discount;
@@ -127,6 +135,23 @@ public class MyDiscountRecyclerViewAdapter extends RecyclerView.Adapter<MyDiscou
         }
     }
 
+    private void updateNumOfPeople(Discount discount, DatabaseReference databaseReference){
+        Discount newDiscount = new Discount(
+                discount.getAddress(),
+                discount.getRest_name(),
+                discount.getStartDate(),
+                discount.getStartTime(),
+                discount.getEndDate(),
+                discount.getEndTime(),
+                discount.getNumOfPeople()+1,
+                discount.getDescription(),
+                discount.getToken(),
+                discount.getKey(),
+                discount.getEmail()
+        );
+        databaseReference.child(discount.getKey()).setValue(newDiscount);
+        Log.d(TAG, "updateTokenInDiscount: updated num of people: " + newDiscount.getKey());
+    }
     @Override
     public int getItemCount() {
         return mDiscountList.size();
