@@ -43,7 +43,6 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
     private List<Event> mEventsList;
     private APIService mAPIService;
 
-
     public MyEventRecyclerViewAdapter(Context mContext, List<Event> mEventsFromFirebase) {
         this.mContext = mContext;
         this.mEventsList = mEventsFromFirebase;
@@ -88,12 +87,34 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
         holder.relative_find_event.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                Log.d(TAG, "onLongClick: MyEventAdapter => Delete my event");
                 DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int decision) {
                         switch(decision){
                             case DialogInterface.BUTTON_POSITIVE:
+                                //Notify event host
+                                cyruslee487.donteatalone.Model.Notification notification =
+                                        new cyruslee487.donteatalone.Model.Notification(
+                                                event.getRestaurant_name() + " On " + event.getDate() + " At " + event.getTime(),
+                                                "Someone has decided to leave you alone");
+                                Sender sender = new Sender(Common.currentToken,notification);
+                                mAPIService.sendNotification(sender)
+                                        .enqueue(new Callback<MyResponse>() {
+                                            @Override
+                                            public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                                                if(response.body().success == 1){
+                                                    Log.d(TAG, "onResponse: FindEventRecyclerAdapter: Success");
+                                                }else{
+                                                    Log.d(TAG, "onResponse: FindEventRecyclerAdapter: Failed");
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onFailure(Call<MyResponse> call, Throwable t) {
+                                                Log.e(TAG, "onFailure: Error", t.getCause());
+                                            }
+                                        });
+                                //Remove from Room Database
                                 removeItem(event);
                                 break;
 
@@ -113,6 +134,30 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
         });
 
 
+    }
+
+    private void removeItem(Event event){
+        new removeItemAsync(mContext, event).execute();
+        int position = mEventsList.indexOf(event);
+        mEventsList.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    private class removeItemAsync extends AsyncTask<Void, Void, Void>{
+        private EventDatabase eventDatabase;
+        private Event event;
+
+        private removeItemAsync(Context mContext, Event event){
+            eventDatabase = EventDatabase.getDatabase(mContext);
+            this.event = event;
+        }
+
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            eventDatabase.eventDao().delete(event);
+            return null;
+        }
     }
 
     @Override
@@ -137,30 +182,6 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
             time_find_event = view.findViewById(R.id.time_find_event);
             image_find_event = view.findViewById(R.id.image_view_find_event);
             relative_find_event = view.findViewById(R.id.relative_find_event);
-        }
-    }
-
-    private void removeItem(Event event){
-        new removeItemAsync(mContext, event).execute();
-        int position = mEventsList.indexOf(event);
-        mEventsList.remove(position);
-        notifyItemRemoved(position);
-    }
-
-    private class removeItemAsync extends AsyncTask<Void, Void, Void>{
-        private EventDatabase eventDatabase;
-        private Event event;
-
-        private removeItemAsync(Context mContext, Event event){
-            eventDatabase = EventDatabase.getDatabase(mContext);
-            this.event = event;
-        }
-
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            eventDatabase.eventDao().delete(event);
-            return null;
         }
     }
 

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/background_light"
+    android:orientation="vertical"
+    android:padding="8dp"
+    tools:context=".Activity.ManagerEventActivity"
+    tools:layout_editor_absoluteY="81dp">
+
+    <EditText
+        android:id="@+id/rest_name_et_manager_event"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/address_manager_event"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:hint="Restaurant Name"
+        android:inputType="text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/address_manager_event" />
+
+    <Button
+        android:id="@+id/address_manager_event"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:onClick="toManagerMapActivity"
+        android:text="Pick the restaurant address from the map"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/start_date_time_tv_manager_event"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="29dp"
+        android:text="Start Date and Time"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rest_name_et_manager_event" />
+
+    <Button
+        android:id="@+id/start_date_time_btn_manager_event"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="6dp"
+        android:layout_marginTop="21dp"
+        android:layout_toRightOf="@id/start_date_time_tv_manager_event"
+        android:onClick="pickStart"
+        android:text="Pick start time"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rest_name_et_manager_event" />
+
+    <TextView
+        android:id="@+id/end_date_time_tv_manager_event"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:layout_marginBottom="76dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="78dp"
+        android:text="End Date and Time"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/people_et_manager_event"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/start_date_time_tv_manager_event" />
+
+    <Button
+        android:id="@+id/end_date_time_btn_manager_event"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="14dp"
+        android:layout_marginTop="30dp"
+        android:onClick="pickEnd"
+        android:text="Pick end time"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/start_date_time_btn_manager_event" />
+
+    <EditText
+        android:id="@+id/description_et_manager_event"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="197dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="197dp"
+        android:ems="10"
+        android:hint="Event Description"
+        android:imeOptions="actionSend|flagNoEnterAction"
+        android:inputType="textShortMessage|textAutoCorrect|textCapSentences|textMultiLine"
+        android:maxLength="2000"
+        android:maxLines="4"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toBottomOf="@+id/post_btn_manager_event"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/start_date_time_tv_manager_event" />
+
+    <EditText
+        android:id="@+id/people_et_manager_event"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/address_manager_event"
+        android:layout_marginBottom="19dp"
+        android:layout_marginEnd="26dp"
+        android:layout_marginStart="24dp"
+        android:ems="10"
+        android:hint="# of people"
+        android:inputType="number"
+        app:layout_constraintBottom_toTopOf="@+id/description_et_manager_event"
+        app:layout_constraintEnd_toEndOf="@+id/start_date_time_tv_manager_event"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/post_btn_manager_event"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="288dp"
+        android:onClick="postEvent"
+        android:text="Post Event"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+</android.support.constraint.ConstraintLayout>

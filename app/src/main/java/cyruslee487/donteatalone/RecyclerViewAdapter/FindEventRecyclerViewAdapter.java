@@ -3,6 +3,7 @@ package cyruslee487.donteatalone.RecyclerViewAdapter;
 import android.app.Notification;
 import android.arch.persistence.room.Database;
 import android.content.Context;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -43,6 +44,7 @@ public class FindEventRecyclerViewAdapter extends RecyclerView.Adapter<FindEvent
 
     private Context mContext;
     private List<Event> mEventsFromFirebase;
+    private List<Event> mEventsFromRoom;
     private APIService mAPIService;
 
 
@@ -82,20 +84,54 @@ public class FindEventRecyclerViewAdapter extends RecyclerView.Adapter<FindEvent
         holder.relative_find_event.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Add event to Room Databse
-                new insertMyEventAsync(mContext).execute(event);
+                    //Add event to Room Databse
+                    new insertMyEventAsync(mContext, event).execute(event);
+            }
+
+        });
+
+    }
+
+    private class insertMyEventAsync extends AsyncTask<Event, Void, Boolean>{
+        private EventDatabase eventDatabase;
+        private Event event;
+
+        private insertMyEventAsync(Context mContext, Event event){
+            eventDatabase = EventDatabase.getDatabase(mContext);
+            this.event = event;
+        }
+
+        @Override
+        protected Boolean doInBackground(Event... events) {
+            List<Event> eventList = eventDatabase.eventDao().getAll();
+
+            for(Event e: eventList){
+                if(e.getKey().equals(events[0].getKey()))
+                    return false;
+            }
+
+            eventDatabase.eventDao().insert(events);
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            if(aBoolean) {
+                Toast.makeText(mContext, "Check -My Event- for new added event", Toast.LENGTH_LONG).show();
 
                 //Send FCM to Event host
                 cyruslee487.donteatalone.Model.Notification notification =
-                        new cyruslee487.donteatalone.Model.Notification("CONTENT", "TITLE");
-                Sender sender = new Sender(Common.currentToken,notification);
+                        new cyruslee487.donteatalone.Model.Notification(
+                                event.getRestaurant_name() + " On " + event.getDate() + " At " + event.getTime(),
+                                "You have some to eat with");
+                Sender sender = new Sender(Common.currentToken, notification);
                 mAPIService.sendNotification(sender)
                         .enqueue(new Callback<MyResponse>() {
                             @Override
                             public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-                                if(response.body().success == 1){
+                                if (response.body().success == 1) {
                                     Log.d(TAG, "onResponse: FindEventRecyclerAdapter: Success");
-                                }else{
+                                } else {
                                     Log.d(TAG, "onResponse: FindEventRecyclerAdapter: Failed");
                                 }
                             }
@@ -105,39 +141,8 @@ public class FindEventRecyclerViewAdapter extends RecyclerView.Adapter<FindEvent
                                 Log.e(TAG, "onFailure: Error", t.getCause());
                             }
                         });
-            }
-        });
-        
-        holder.relative_find_event.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                Log.d(TAG, "onLongClick: clicked");
-                String key = event.getKey();
-                deleteEvent(key);
-                return false;
-            }
-        });
-    }
-
-    private void deleteEvent(String key){
-        DatabaseReference reference = FirebaseDatabase.getInstance()
-                .getReference("events").child(key);
-        reference.removeValue();
-        Toast.makeText(mContext, "Event removed", Toast.LENGTH_SHORT).show();
-    }
-
-    private class insertMyEventAsync extends AsyncTask<Event, Void, Void>{
-        private EventDatabase eventDatabase;
-
-        private insertMyEventAsync(Context mContext){
-            eventDatabase = EventDatabase.getDatabase(mContext);
-        }
-
-        @Override
-        protected Void doInBackground(Event... events) {
-            eventDatabase.eventDao().insert(events);
-            Log.d(TAG, "doInBackground: FindEventRecyclerViewAdapter: add event to my event");
-            return null;
+            } else
+                Toast.makeText(mContext, "You have already joing that event", Toast.LENGTH_LONG).show();
         }
     }
 

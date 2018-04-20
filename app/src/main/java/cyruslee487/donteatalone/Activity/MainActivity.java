@@ -1,12 +1,18 @@
 package cyruslee487.donteatalone.Activity;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.arch.persistence.room.Database;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +25,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -35,9 +45,12 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,11 +61,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cyruslee487.donteatalone.DiscountRoomDatabase.Discount;
 import cyruslee487.donteatalone.EventRoomDatabase.Event;
 import cyruslee487.donteatalone.R;
 import cyruslee487.donteatalone.RecyclerViewAdapter.MainMenuRecyclerViewAdapter;
 import cyruslee487.donteatalone.Restaurant;
 import cyruslee487.donteatalone.SharedPrefManager;
+import cyruslee487.donteatalone.UtilFunction;
+import okhttp3.internal.Util;
 
 
 public class MainActivity extends AppCompatActivity
@@ -78,6 +94,9 @@ public class MainActivity extends AppCompatActivity
     private ChildEventListener mChildEventListener;
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
+    private FirebaseUser mFirebaseUser;
+    private SharedPrefManager mSharedPrefManager;
+
 
     @Override
     protected void onPostResume() {
@@ -97,9 +116,34 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_main);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isManager()) {
+                    Intent intent = new Intent(MainActivity.this, ManagerEventActivity.class);
+                    startActivity(intent);
+
+                } else {
+                    Snackbar.make(view, "You do not have Manager Permission", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+            }
+        });
+
         NavigationView navigationView = findViewById(R.id.nav_view);
-        changeNavMenuItemName(navigationView);
+        UtilFunction.changeNavMenuItemName(navigationView);
         navigationView.setNavigationItemSelectedListener(this);
+
+        View header = navigationView.getHeaderView(0);
+        TextView title = header.findViewById(R.id.nav_profile_title);
+        TextView detail = header.findViewById(R.id.nav_profile_detail);
+
+        mUsername = ANONYMOUS;
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mDatabaseReference = mFirebaseDatabase.getReference();
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        mSharedPrefManager = SharedPrefManager.getInstance(this);
 
         if(isServiceOk()){
             getPermission();
@@ -107,12 +151,9 @@ public class MainActivity extends AppCompatActivity
 
         new sendTokenAsync().execute();
 
-        initBitmaps();
+        new checkTokenInFirebaseAsync().execute();
 
-        mUsername = ANONYMOUS;
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mDatabaseReference = mFirebaseDatabase.getReference().child("events");
-        mFirebaseAuth = FirebaseAuth.getInstance();
+        initBitmaps();
 
         getIntentFromRestaurantInfoActivity();
 
@@ -129,6 +170,152 @@ public class MainActivity extends AppCompatActivity
             }
         };
 
+        if(mSharedPrefManager != null && mFirebaseAuth.getCurrentUser() != null) {
+            if (isManager()) {
+                Log.d(TAG, "onCreate: I am owner");
+                title.setText(mFirebaseAuth.getCurrentUser().getDisplayName());
+                detail.setText(mSharedPrefManager.getOwnerStatus());
+            } else {
+                Log.d(TAG, "onCreate: I am not the owner");
+                title.setText(mFirebaseAuth.getCurrentUser().getDisplayName());
+                detail.setText(mSharedPrefManager.getOwnerStatus());
+            }
+        }
+
+        Thread thread = new Thread(){
+            @Override
+            public void run() {
+                while(!isInterrupted()){
+                    try{
+                        Thread.sleep(60 * 1000);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mDatabaseReference.child("events").addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
+                                            Event event = postSnapshot.getValue(Event.class);
+                                            if(event!=null) {
+                                                if(!UtilFunction.checkExpiredEvent(event)){
+                                                    String key = event.getKey();
+                                                    mDatabaseReference.child(key).removeValue();
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+                        });
+                    }catch(InterruptedException e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };  thread.start();
+
+    }
+
+    //Update token in Event and Discount
+    private void checkEventToken(){
+        DatabaseReference databaseReference = mFirebaseDatabase.getReference().child("events");
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                    Event event = postSnapshot.getValue(Event.class);
+                    if(event!=null && mFirebaseUser != null) {
+                        if (event.getEmail().equals(mFirebaseUser.getEmail())) {
+                            //Log.d(TAG, "onDataChange: Event: Same email");
+                            if (!event.getToken().equals(mSharedPrefManager.getDeviceToken())) {
+                                //Log.d(TAG, "onDataChange: Event Different token");
+                                updateTokenInEvent(event);
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void updateTokenInEvent(Event event){
+        Event newEvent = new Event(
+                event.getKey(),
+                event.getUsername(),
+                event.getRestaurant_name(),
+                event.getLocation(),
+                event.getDate(),
+                event.getTime(),
+                mSharedPrefManager.getDeviceToken(),
+                event.getEmail()
+        );
+        mDatabaseReference.child(event.getKey()).setValue(newEvent);
+        Log.d(TAG, "updateTokenInEvent: updated: " + newEvent.getKey());
+    }
+
+    private void checkDiscountToken(){
+        DatabaseReference databaseReference = mFirebaseDatabase.getReference().child("discount");
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                    Discount discount = postSnapshot.getValue(Discount.class);
+                    if(discount!=null && mFirebaseUser != null) {
+                        if (discount.getEmail().equals(mFirebaseUser.getEmail())){
+                            //Log.d(TAG, "onDataChange: Discount: Same email");
+                            if (!discount.getToken().equals(mSharedPrefManager.getDeviceToken())) {
+                                //Log.d(TAG, "onDataChange: Discount: Different token");
+                                updateTokenInDiscount(discount);
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void updateTokenInDiscount(Discount discount){
+        Discount newDiscount = new Discount(
+                discount.getAddress(),
+                discount.getRest_name(),
+                discount.getStartDate(),
+                discount.getStartTime(),
+                discount.getEndDate(),
+                discount.getEndTime(),
+                discount.getNumOfPeople(),
+                discount.getDescription(),
+                mSharedPrefManager.getDeviceToken(),
+                discount.getKey(),
+                discount.getEmail()
+        );
+        mDatabaseReference.child(discount.getKey()).setValue(newDiscount);
+        Log.d(TAG, "updateTokenInDiscount: updated: " + newDiscount.getKey());
+    }
+
+    private class checkTokenInFirebaseAsync extends AsyncTask<Void, Void, Void>{
+        @Override
+        protected Void doInBackground(Void... voids) {
+            checkEventToken();
+            checkDiscountToken();
+            return null;
+        }
     }
 
     //Google Service Permission Check
@@ -203,6 +390,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    //Get event from restaurant Info and upload to firebase
     private void getIntentFromRestaurantInfoActivity(){
         if(getIntent().hasExtra(IMAGE_NAME)
                 && getIntent().hasExtra(IMAGE_ADDRESS)
@@ -213,17 +401,17 @@ public class MainActivity extends AppCompatActivity
             String date = getIntent().getStringExtra(SELECT_DATE);
             String time = getIntent().getStringExtra(SELECT_TIME);
             String token = SharedPrefManager.getInstance(this).getDeviceToken();
+            String email = "";
             if(mUsername.equals(ANONYMOUS)){
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if(user != null) {
                     mUsername = user.getDisplayName();
+                    email = user.getEmail();
                 }
             }
             String key = mDatabaseReference.push().getKey();
             Log.d(TAG, "getIntentFromRestaurantInfoActivity: key => " + key);
-            mDatabaseReference.child(key).setValue(new Event(key, mUsername, name, address, date, time, token));
-            Log.d(TAG, "onCreate: Set value: " + mUsername + "___"
-                    + name + "___" + address + "___" + date + "___" + time);
+            mDatabaseReference.child("events").child(key).setValue(new Event(key, mUsername, name, address, date, time, token, email));
         }
     }
 
@@ -449,11 +637,81 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            Log.d(TAG, "onOptionsItemSelected: sign out");
+            Log.d(TAG, "onOptionsItemSelected: register restaurant account");
+            AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
+            View mView = getLayoutInflater().inflate(R.layout.restaurant_permission_custom_dialog,
+                    null);
+            final EditText mRegEditText = mView.findViewById(R.id.editText_cus_dialog);
+            mBuilder.setPositiveButton("Register", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                }
+            });
+            mBuilder.setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
+                }
+            });
+            mBuilder.setView(mView);
+            final AlertDialog dialog = mBuilder.create();
+            dialog.show();
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(!mRegEditText.getText().toString().isEmpty()) {
+                        String code = mRegEditText.getText().toString();
+                        if(code.equals("restaurantowner")){
+                            mFirebaseUser = mFirebaseAuth.getCurrentUser();
+                            mSharedPrefManager.saveOwnerStatus("Restaurant Manager", mFirebaseUser.getEmail());
+                            isManager();
+                            NavigationView nv = findViewById(R.id.nav_view);
+                            changeNavigationTitle(nv);
+                            dialog.dismiss();
+                            Toast.makeText(MainActivity.this, "Register as owner", Toast.LENGTH_SHORT).show();
+                        } else{
+                            Toast.makeText(MainActivity.this, "You are fake news", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            });
         }
         return super.onOptionsItemSelected(item);
     }
 
+    private boolean isManager(){
+        String status = mSharedPrefManager.getOwnerStatus();
+        String email = mSharedPrefManager.getOwnerEmail();
+        mFirebaseUser = mFirebaseAuth.getCurrentUser();
+        String user_email = mFirebaseUser.getEmail();
+
+        if(status.equals("Restaurant Manager")){
+            if(email.equals(user_email)){
+                //Log.d(TAG, "isManager: Status: True, Email: Match");
+                return true;
+            }else{
+                //Log.d(TAG, "isManager: Status: True, Email: Not match");
+                mSharedPrefManager.saveOwnerStatus("Guest", user_email);
+                return false;
+            }
+        }else{
+            //Log.d(TAG, "isManager: Status: False");
+            mSharedPrefManager.saveOwnerStatus("Guest", user_email);
+            return false;
+        }
+    }
+
+    private void changeNavigationTitle(NavigationView navigationView){
+        View header = navigationView.getHeaderView(0);
+        TextView title = header.findViewById(R.id.nav_profile_title);
+        TextView detail = header.findViewById(R.id.nav_profile_detail);
+        if(mFirebaseAuth!=null)
+            title.setText(mFirebaseAuth.getCurrentUser().getDisplayName());
+
+        if(mSharedPrefManager!=null)
+            detail.setText(mSharedPrefManager.getOwnerStatus());
+    }
+    
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -467,13 +725,15 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
 
         } else if (id == R.id.nav_slideshow) {
-            Intent intent = new Intent(this, MyEventActivity.class);
+            Intent intent = new Intent(this, FindDiscountActivity.class);
             startActivity(intent);
 
         } else if (id == R.id.nav_manage) {
-            Log.d(TAG, "onNavigationItemSelected: manage");
+            Intent intent = new Intent(this, MyEventTabActivity.class);
+            startActivity(intent);
+
         } else if (id == R.id.nav_share) {
-            Log.d(TAG, "onNavigationItemSelected: share");
+
         } else if (id == R.id.nav_send) {
             Log.d(TAG, "onNavigationItemSelected: send: User sign out");
             AuthUI.getInstance().signOut(this);
@@ -484,21 +744,4 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void changeNavMenuItemName(NavigationView navigationView){
-        //Change Navigation Menu item name
-        Menu menu = navigationView.getMenu();
-        MenuItem nav_camara = menu.findItem(R.id.nav_camera);
-        MenuItem nav_gallery = menu.findItem(R.id.nav_gallery);
-        MenuItem nav_slideshow = menu.findItem(R.id.nav_slideshow);
-        MenuItem nav_manage = menu.findItem(R.id.nav_manage);
-        MenuItem nav_share = menu.findItem(R.id.nav_share);
-        MenuItem nav_send = menu.findItem(R.id.nav_send);
-
-        nav_camara.setTitle("Restaurant");
-        nav_gallery.setTitle("Find Event");
-        nav_slideshow.setTitle("My Event");
-        nav_manage.setTitle("Setting");
-        nav_share.setTitle("Profile");
-        nav_send.setTitle("Sign out");
-    }
 }

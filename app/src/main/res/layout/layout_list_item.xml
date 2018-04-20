@@ -2,38 +2,45 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="25dp"
-    android:id="@+id/relative_list_item">
+    android:padding="8dp"
+    android:background="#66cccc">
 
-
-
-    <ImageView
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:id="@+id/image_list_item"
-        android:src="@mipmap/ic_launcher"
-        />
-
-    <TextView
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textview_list_item"
-        android:text="Canada"
-        android:layout_toRightOf="@+id/image_list_item"
-        android:textColor="#000"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="10dp"
-        android:textSize="20sp"/>
+        android:id="@+id/relative_list_item"
+        android:padding="8dp"
+        android:background="#fff">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textview2_list_item"
-        android:text="Restaruant address *********************"
-        android:layout_toRightOf="@+id/image_list_item"
-        android:textColor="#000"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="45dp"
-        android:textSize="13sp"/>
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:id="@+id/image_list_item"
+            android:src="@mipmap/ic_launcher"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textview_list_item"
+            android:text="Canada"
+            android:layout_toRightOf="@+id/image_list_item"
+            android:textColor="#000"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="10dp"
+            android:textSize="20sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textview2_list_item"
+            android:text="Restaruant address *********************"
+            android:layout_toRightOf="@+id/image_list_item"
+            android:textColor="#000"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="45dp"
+            android:textSize="13sp"/>
+    </RelativeLayout>
+
 
 </RelativeLayout>

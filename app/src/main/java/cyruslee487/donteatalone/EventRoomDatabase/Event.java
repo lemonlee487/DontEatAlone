@@ -7,35 +7,39 @@ import android.arch.persistence.room.PrimaryKey;
 
 @Entity
 public class Event {
+
     @PrimaryKey(autoGenerate = true)
-            private int eid;
+    private int eid;
 
     @ColumnInfo(name = "key")
-            private String key;
+    private String key;
 
     @ColumnInfo(name = "user_name")
-            private String username;
+    private String username;
 
     @ColumnInfo(name = "restaurant_name")
-            private String restaurant_name;
+    private String restaurant_name;
 
     @ColumnInfo(name = "location")
-            private String location;
+    private String location;
 
     @ColumnInfo(name = "date")
-            private String date;
+    private String date;
 
     @ColumnInfo(name = "time")
-            private String time;
+    private String time;
 
     @ColumnInfo(name = "token")
-            private String token;
+    private String token;
+
+    @ColumnInfo(name = "email")
+    private String email;
 
 
     public Event(){
     }
 
-    public Event(String key, String username, String restaurant_name, String location, String date, String time, String token){
+    public Event(String key, String username, String restaurant_name, String location, String date, String time, String token, String email){
         this.key = key;
         this.username = username;
         this.restaurant_name = restaurant_name;
@@ -43,6 +47,7 @@ public class Event {
         this.date = date;
         this.time = time;
         this.token = token;
+        this.email = email;
     }
 
     public int getEid() {
@@ -112,12 +117,23 @@ public class Event {
     @Override
     public String toString() {
         return "Event{" +
-                "restaurant_name='" + restaurant_name + '\'' +
+                "eid=" + eid +
+                ", key='" + key + '\'' +
                 ", username='" + username + '\'' +
+                ", restaurant_name='" + restaurant_name + '\'' +
                 ", location='" + location + '\'' +
                 ", date='" + date + '\'' +
                 ", time='" + time + '\'' +
                 ", token='" + token + '\'' +
+                ", email='" + email + '\'' +
                 '}';
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

@@ -20,6 +20,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +30,8 @@ import cyruslee487.donteatalone.EventRoomDatabase.Event;
 import cyruslee487.donteatalone.EventRoomDatabase.EventDatabase;
 import cyruslee487.donteatalone.R;
 import cyruslee487.donteatalone.RecyclerViewAdapter.MyEventRecyclerViewAdapter;
+import cyruslee487.donteatalone.SharedPrefManager;
+import cyruslee487.donteatalone.UtilFunction;
 
 public class MyEventActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -36,6 +41,9 @@ public class MyEventActivity extends AppCompatActivity
 
     private List<Event> mEventFromRoomDatabase = new ArrayList<>();
     private TextView usernameTV, restNameTV, addressTV, dateTV, timeTV;
+    private FirebaseUser mFirebaseUser;
+    private FirebaseAuth mFirebaseAuth;
+    private SharedPrefManager mSharedPrefManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,15 +52,6 @@ public class MyEventActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -60,7 +59,7 @@ public class MyEventActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        changeNavMenuItemName(navigationView);
+        UtilFunction.changeNavMenuItemName(navigationView);
         navigationView.setNavigationItemSelectedListener(this);
 
         usernameTV = findViewById(R.id.username_my_event);
@@ -70,6 +69,14 @@ public class MyEventActivity extends AppCompatActivity
         timeTV = findViewById(R.id.time_my_event);
 
         getEventFromRoomDatabase();
+
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        mSharedPrefManager = SharedPrefManager.getInstance(this);
+
+        if(isManager())
+            changeNavigationTitle(navigationView);
+        else
+            changeNavigationTitle(navigationView);
     }
 
     private void getEventFromRoomDatabase(){
@@ -124,6 +131,41 @@ public class MyEventActivity extends AppCompatActivity
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
+    private boolean isManager(){
+        String status = mSharedPrefManager.getOwnerStatus();
+        String email = mSharedPrefManager.getOwnerEmail();
+        mFirebaseUser = mFirebaseAuth.getCurrentUser();
+        String user_email = mFirebaseUser.getEmail();
+
+        if(status.equals("Restaurant Manager")){
+            if(email.equals(user_email)){
+                Log.d(TAG, "isManager: Status: True, Email: Match");
+                return true;
+            }else{
+                Log.d(TAG, "isManager: Status: True, Email: Not match");
+                mSharedPrefManager.saveOwnerStatus("Guest", user_email);
+                return false;
+            }
+        }else{
+            Log.d(TAG, "isManager: Status: False");
+            mSharedPrefManager.saveOwnerStatus("Guest", user_email);
+            return false;
+        }
+    }
+
+    private void changeNavigationTitle(NavigationView navigationView){
+        View header = navigationView.getHeaderView(0);
+        TextView title = header.findViewById(R.id.nav_profile_title_me);
+        TextView detail = header.findViewById(R.id.nav_profile_detail_me);
+
+        if(mFirebaseAuth.getCurrentUser()!=null)
+            title.setText(mFirebaseAuth.getCurrentUser().getDisplayName());
+
+        if(mSharedPrefManager!=null)
+            detail.setText(mSharedPrefManager.getOwnerStatus());
+
+    }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -173,6 +215,10 @@ public class MyEventActivity extends AppCompatActivity
             startActivity(intent);
             finish();
         } else if (id == R.id.nav_slideshow) {
+            Intent intent = new Intent(this, FindDiscountActivity.class);
+            intent.setFlags(intent.getFlags()|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
 
         } else if (id == R.id.nav_manage) {
 
@@ -200,7 +246,7 @@ public class MyEventActivity extends AppCompatActivity
         nav_camara.setTitle("Restaurant");
         nav_gallery.setTitle("Find Event");
         nav_slideshow.setTitle("My Event");
-        nav_manage.setTitle("Setting");
+        nav_manage.setTitle("Discount??");
         nav_share.setTitle("Profile");
         nav_send.setTitle("Sign out");
     }
