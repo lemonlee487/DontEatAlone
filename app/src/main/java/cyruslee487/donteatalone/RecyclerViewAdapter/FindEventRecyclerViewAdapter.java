@@ -111,7 +111,6 @@ public class FindEventRecyclerViewAdapter extends RecyclerView.Adapter<FindEvent
             }
 
             eventDatabase.eventDao().insert(events);
-            Log.d(TAG, "doInBackground: FindEventRecyclerViewAdapter: add event to my event");
             return true;
         }
 

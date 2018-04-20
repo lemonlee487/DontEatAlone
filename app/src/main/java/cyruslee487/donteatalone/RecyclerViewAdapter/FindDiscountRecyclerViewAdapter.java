@@ -80,39 +80,8 @@ public class FindDiscountRecyclerViewAdapter extends RecyclerView.Adapter<FindDi
                         public void onClick(DialogInterface dialogInterface, int decision) {
                             switch(decision){
                                 case DialogInterface.BUTTON_POSITIVE:
-                                    //Change number of people upon clicking
-                                    if(updateNumOfPeople(discount, databaseReference)) {
-                                        //Insert selected discount to room database
-                                        discount.setNumOfPeople(discount.getNumOfPeople()-1);
-                                        Log.d(TAG, "onClick: " + discount.getNumOfPeople());
-                                        new insertMyDiscountAsync(mContext).execute(discount);
-                                        Toast.makeText(mContext, "Check -My Discount- for new added discount", Toast.LENGTH_LONG).show();
-
-                                        //Send FCM to Event host
-                                        cyruslee487.donteatalone.Model.Notification notification =
-                                                new cyruslee487.donteatalone.Model.Notification(
-                                                        "People need: " + discount.getNumOfPeople(),
-                                                        "Someone has claimed this discount");
-                                        Sender sender = new Sender(Common.currentToken, notification);
-                                        mAPIService.sendNotification(sender)
-                                                .enqueue(new Callback<MyResponse>() {
-                                                    @Override
-                                                    public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-                                                        if (response.body().success == 1) {
-                                                            Log.d(TAG, "onResponse: FindDiscountRecyclerAdapter: Success");
-                                                        } else {
-                                                            Log.d(TAG, "onResponse: FindDiscountRecyclerAdapter: Failed");
-                                                        }
-                                                    }
-
-                                                    @Override
-                                                    public void onFailure(Call<MyResponse> call, Throwable t) {
-                                                        Log.e(TAG, "onFailure: Error", t.getCause());
-                                                    }
-                                                });
-                                    }else{
-                                        Toast.makeText(mContext, "No more room for this discount", Toast.LENGTH_SHORT).show();
-                                    }
+                                    //Insert discount to room database
+                                    new insertMyDiscountAsync(mContext, discount).execute(discount);
                                     break;
 
                                 case DialogInterface.BUTTON_NEGATIVE:
@@ -193,44 +162,91 @@ public class FindDiscountRecyclerViewAdapter extends RecyclerView.Adapter<FindDi
         }
     }
 
-    private boolean updateNumOfPeople(Discount discount, DatabaseReference databaseReference){
+    private boolean checkAvailableRoom(Discount discount, DatabaseReference databaseReference){
         int people = discount.getNumOfPeople();
         if(people != 0)
-            people -= 1;
+            return true;
         else
             return false;
-
-        Discount newDiscount = new Discount(
-                discount.getAddress(),
-                discount.getRest_name(),
-                discount.getStartDate(),
-                discount.getStartTime(),
-                discount.getEndDate(),
-                discount.getEndTime(),
-                people,
-                discount.getDescription(),
-                discount.getToken(),
-                discount.getKey(),
-                discount.getEmail()
-        );
-        databaseReference.child(discount.getKey()).setValue(newDiscount);
-        Log.d(TAG, "updateTokenInDiscount: updated num of people: " + newDiscount.getKey());
-        return true;
     }
     
-    private class insertMyDiscountAsync extends AsyncTask<Discount, Void, Void>{
+    private class insertMyDiscountAsync extends AsyncTask<Discount, Void, Boolean>{
         private DiscountDatabase discountDatabase;
+        private Discount discount;
         
-        private insertMyDiscountAsync(Context mContext){
+        private insertMyDiscountAsync(Context mContext, Discount discount){
             discountDatabase = DiscountDatabase.getDatabase(mContext);
+            this.discount = discount;
         }
 
 
         @Override
-        protected Void doInBackground(Discount... discounts) {
+        protected Boolean doInBackground(Discount... discounts) {
+            List<Discount> discountList = discountDatabase.discountDao().getAll();
+
+            for(Discount d: discountList){
+                if(d.getKey().equals(discounts[0].getKey()))
+                    return false;
+            }
+            DatabaseReference databaseReference = FirebaseDatabase
+                    .getInstance().getReference().child("discount");
+
+            if(!checkAvailableRoom(discount, databaseReference)) {
+                return false;
+            }
+
+            int people = discount.getNumOfPeople() - 1;
+
+            Discount newDiscount = new Discount(
+                    discount.getAddress(),
+                    discount.getRest_name(),
+                    discount.getStartDate(),
+                    discount.getStartTime(),
+                    discount.getEndDate(),
+                    discount.getEndTime(),
+                    people,
+                    discount.getDescription(),
+                    discount.getToken(),
+                    discount.getKey(),
+                    discount.getEmail()
+            );
+            databaseReference.child(discount.getKey()).setValue(newDiscount);
+
+            discounts[0].setNumOfPeople(discounts[0].getNumOfPeople() - 1);
             discountDatabase.discountDao().insert(discounts);
-            Log.d(TAG, "doInBackground: inserted discount to discount database");
-            return null;
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            if(aBoolean){
+                Toast.makeText(mContext, "Check -My Discount- for new added discount", Toast.LENGTH_LONG).show();
+
+                //Send FCM to Event host
+                cyruslee487.donteatalone.Model.Notification notification =
+                        new cyruslee487.donteatalone.Model.Notification(
+                                "People need: " + discount.getNumOfPeople(),
+                                "Someone has claimed this discount");
+                Sender sender = new Sender(Common.currentToken, notification);
+                mAPIService.sendNotification(sender)
+                        .enqueue(new Callback<MyResponse>() {
+                            @Override
+                            public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                                if (response.body().success == 1) {
+                                    Log.d(TAG, "onResponse: FindDiscountRecyclerAdapter: Success");
+                                } else {
+                                    Log.d(TAG, "onResponse: FindDiscountRecyclerAdapter: Failed");
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<MyResponse> call, Throwable t) {
+                                Log.e(TAG, "onFailure: Error", t.getCause());
+                            }
+                        });
+            }else{
+                Toast.makeText(mContext, "You can't claim this discount", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
