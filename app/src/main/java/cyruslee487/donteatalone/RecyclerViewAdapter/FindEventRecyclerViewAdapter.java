@@ -111,16 +111,6 @@ public class FindEventRecyclerViewAdapter extends RecyclerView.Adapter<FindEvent
                         });
             }
         });
-        
-        holder.relative_find_event.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                Log.d(TAG, "onLongClick: clicked");
-                String key = event.getKey();
-                deleteEvent(key);
-                return false;
-            }
-        });
     }
 
     private void deleteEvent(String key){

@@ -74,39 +74,57 @@ public class FindDiscountRecyclerViewAdapter extends RecyclerView.Adapter<FindDi
             public void onClick(View view) {
                 //Check if discount has expired
                 if(UtilFunction.checkExpiredDiscount(discount)){
-                    //Change number of people upon clicking
-                    boolean result = updateNumOfPeople(discount, databaseReference);
-                    if(result == true) {
-                        //Change UI
-                        //Insert selected discount to room database
-                        new insertMyDiscountAsync(mContext).execute(discount);
-                        Toast.makeText(mContext, "Check -My Discount- for new added discount", Toast.LENGTH_LONG).show();
+                    //Show description interface
+                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int decision) {
+                            switch(decision){
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    //Change number of people upon clicking
+                                    if(updateNumOfPeople(discount, databaseReference)) {
+                                        //Insert selected discount to room database
+                                        new insertMyDiscountAsync(mContext).execute(discount);
+                                        Toast.makeText(mContext, "Check -My Discount- for new added discount", Toast.LENGTH_LONG).show();
 
-                        //Send FCM to Event host
-                        cyruslee487.donteatalone.Model.Notification notification =
-                                new cyruslee487.donteatalone.Model.Notification(
-                                        "People need: " + discount.getNumOfPeople(),
-                                        "Someone has claimed this discount");
-                        Sender sender = new Sender(Common.currentToken, notification);
-                        mAPIService.sendNotification(sender)
-                                .enqueue(new Callback<MyResponse>() {
-                                    @Override
-                                    public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-                                        if (response.body().success == 1) {
-                                            Log.d(TAG, "onResponse: FindDiscountRecyclerAdapter: Success");
-                                        } else {
-                                            Log.d(TAG, "onResponse: FindDiscountRecyclerAdapter: Failed");
-                                        }
-                                    }
+                                        //Send FCM to Event host
+                                        cyruslee487.donteatalone.Model.Notification notification =
+                                                new cyruslee487.donteatalone.Model.Notification(
+                                                        "People need: " + discount.getNumOfPeople(),
+                                                        "Someone has claimed this discount");
+                                        Sender sender = new Sender(Common.currentToken, notification);
+                                        mAPIService.sendNotification(sender)
+                                                .enqueue(new Callback<MyResponse>() {
+                                                    @Override
+                                                    public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                                                        if (response.body().success == 1) {
+                                                            Log.d(TAG, "onResponse: FindDiscountRecyclerAdapter: Success");
+                                                        } else {
+                                                            Log.d(TAG, "onResponse: FindDiscountRecyclerAdapter: Failed");
+                                                        }
+                                                    }
 
-                                    @Override
-                                    public void onFailure(Call<MyResponse> call, Throwable t) {
-                                        Log.e(TAG, "onFailure: Error", t.getCause());
+                                                    @Override
+                                                    public void onFailure(Call<MyResponse> call, Throwable t) {
+                                                        Log.e(TAG, "onFailure: Error", t.getCause());
+                                                    }
+                                                });
+                                    }else{
+                                        Toast.makeText(mContext, "No more room for this discount", Toast.LENGTH_SHORT).show();
                                     }
-                                });
-                    }else{
-                        Toast.makeText(mContext, "No more room for this discount", Toast.LENGTH_SHORT).show();
-                    }
+                                    break;
+
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    break;
+                            }
+                        }
+                    };
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                    builder.setMessage("Discount detail:\n\n" + discount.getDescription())
+                            .setPositiveButton("Claim it", dialogClickListener)
+                            .setNegativeButton("Dismiss", dialogClickListener)
+                            .show();
+
                 }else{
                     Toast.makeText(mContext, "This discount has expired", Toast.LENGTH_SHORT).show();
                 }

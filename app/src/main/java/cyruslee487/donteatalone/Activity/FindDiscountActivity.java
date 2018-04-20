@@ -187,7 +187,7 @@ public class FindDiscountActivity extends AppCompatActivity
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
-            Intent intent = new Intent(this, MyEventActivity.class);
+            Intent intent = new Intent(this, MyEventTabActivity.class);
             intent.setFlags(intent.getFlags()|Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             finish();

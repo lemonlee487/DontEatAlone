@@ -730,11 +730,11 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
 
         } else if (id == R.id.nav_manage) {
-            Intent intent = new Intent(this, MyEventActivity.class);
+            Intent intent = new Intent(this, MyEventTabActivity.class);
             startActivity(intent);
 
         } else if (id == R.id.nav_share) {
-            Log.d(TAG, "onNavigationItemSelected: share");
+
         } else if (id == R.id.nav_send) {
             Log.d(TAG, "onNavigationItemSelected: send: User sign out");
             AuthUI.getInstance().signOut(this);
