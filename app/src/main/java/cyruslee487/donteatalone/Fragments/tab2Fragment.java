@@ -27,8 +27,6 @@ import cyruslee487.donteatalone.RecyclerViewAdapter.MyEventRecyclerViewAdapter;
 public class tab2Fragment extends Fragment{
     private static final String TAG = "DB";
 
-    private List<Discount> mDiscountFromRoomDatabase = new ArrayList<>();
-
     private RecyclerView mRecyclerView;
 
     @Nullable
@@ -47,7 +45,7 @@ public class tab2Fragment extends Fragment{
         new getDiscountFromRoomDatabaseAsync(getActivity()).execute();
     }
 
-    private class getDiscountFromRoomDatabaseAsync extends AsyncTask<Void, Void, Void>{
+    private class getDiscountFromRoomDatabaseAsync extends AsyncTask<Void, Void, List<Discount>>{
         private DiscountDatabase discountDatabase;
 
         private getDiscountFromRoomDatabaseAsync(Context context){
@@ -55,15 +53,19 @@ public class tab2Fragment extends Fragment{
         }
 
         @Override
-        protected Void doInBackground(Void... voids) {
-            mDiscountFromRoomDatabase = discountDatabase.discountDao().getAll();
-            initRecyclerView();
-            return null;
+        protected List<Discount> doInBackground(Void... voids) {
+            List<Discount> list = discountDatabase.discountDao().getAll();
+            return list;
+        }
+
+        @Override
+        protected void onPostExecute(List<Discount> discounts) {
+            initRecyclerView(discounts);
         }
     }
 
-    private void initRecyclerView(){
-        MyDiscountRecyclerViewAdapter mAdapter = new MyDiscountRecyclerViewAdapter(mDiscountFromRoomDatabase, getActivity());
+    private void initRecyclerView(List<Discount> list){
+        MyDiscountRecyclerViewAdapter mAdapter = new MyDiscountRecyclerViewAdapter(list, getActivity());
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }

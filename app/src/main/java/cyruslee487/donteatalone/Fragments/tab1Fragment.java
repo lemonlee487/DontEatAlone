@@ -25,8 +25,6 @@ import cyruslee487.donteatalone.RecyclerViewAdapter.MyEventRecyclerViewAdapter;
 public class tab1Fragment extends Fragment {
     private static final String TAG = "DB";
 
-    private List<Event> mEventFromRoomDatabase = new ArrayList<>();
-
     private RecyclerView mRecyclerView;
     private TextView mUsername, mRestName, mAddress, mDate, mTime;
 
@@ -51,7 +49,7 @@ public class tab1Fragment extends Fragment {
         new getEventFromRoomDatabase(getActivity()).execute();
     }
 
-    private class getEventFromRoomDatabase extends AsyncTask<Void, Void, Void> {
+    private class getEventFromRoomDatabase extends AsyncTask<Void, Void, List<Event>> {
         private EventDatabase eventDatabase;
 
         private getEventFromRoomDatabase(Context mContext){
@@ -59,16 +57,20 @@ public class tab1Fragment extends Fragment {
         }
 
         @Override
-        protected Void doInBackground(Void... voids) {
-            mEventFromRoomDatabase = eventDatabase.eventDao().getAll();
-            setUpComingEvent();
-            return null;
+        protected List<Event> doInBackground(Void... voids) {
+            List<Event> list = eventDatabase.eventDao().getAll();
+            return list;
+        }
+
+        @Override
+        protected void onPostExecute(List<Event> events) {
+            setUpComingEvent(events);
         }
     }
 
-    private void setUpComingEvent(){
-        if(!mEventFromRoomDatabase.isEmpty()){
-            Event event = mEventFromRoomDatabase.get(0);
+    private void setUpComingEvent(List<Event> list){
+        if(!list.isEmpty()){
+            Event event = list.get(0);
             if (event != null) {
                 mUsername.setText(event.getUsername());
                 mRestName.setText(event.getRestaurant_name());
@@ -77,22 +79,22 @@ public class tab1Fragment extends Fragment {
                 mTime.setText(event.getTime());
                 Log.d(TAG, "setUpComingEvent: Set");
 
-                initRecyclerView();
+                initRecyclerView(list);
             } else {
                 Log.e(TAG, "setUpComingEvent: Event from room is null");
             }
         }else{
-            mUsername.setText("NO");
-            mRestName.setText("EVENT");
-            mAddress.setText("FOR");
-            mDate.setText("YOU");
+            mUsername.setText("You have not select any events");
+            mRestName.setText("");
+            mAddress.setText("");
+            mDate.setText("");
             mTime.setText("");
         }
     }
 
-    private void initRecyclerView(){
+    private void initRecyclerView(List<Event> list){
         MyEventRecyclerViewAdapter mAdapter =
-                new MyEventRecyclerViewAdapter(getActivity(), mEventFromRoomDatabase);
+                new MyEventRecyclerViewAdapter(getActivity(), list);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }

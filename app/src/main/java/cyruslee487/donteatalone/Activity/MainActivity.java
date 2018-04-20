@@ -229,11 +229,13 @@ public class MainActivity extends AppCompatActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot postSnapshot: dataSnapshot.getChildren()){
                     Event event = postSnapshot.getValue(Event.class);
-                    if(event!=null && event.getEmail().equals(mFirebaseUser.getEmail())){
-                        //Log.d(TAG, "onDataChange: Event: Same email");
-                        if(!event.getToken().equals(mSharedPrefManager.getDeviceToken())){
-                            //Log.d(TAG, "onDataChange: Event Different token");
-                            updateTokenInEvent(event);
+                    if(event!=null && mFirebaseUser != null) {
+                        if (event.getEmail().equals(mFirebaseUser.getEmail())) {
+                            //Log.d(TAG, "onDataChange: Event: Same email");
+                            if (!event.getToken().equals(mSharedPrefManager.getDeviceToken())) {
+                                //Log.d(TAG, "onDataChange: Event Different token");
+                                updateTokenInEvent(event);
+                            }
                         }
                     }
 
@@ -269,11 +271,13 @@ public class MainActivity extends AppCompatActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot postSnapshot: dataSnapshot.getChildren()){
                     Discount discount = postSnapshot.getValue(Discount.class);
-                    if(discount!=null && discount.getEmail().equals(mFirebaseUser.getEmail())) {
-                        //Log.d(TAG, "onDataChange: Discount: Same email");
-                        if (!discount.getToken().equals(mSharedPrefManager.getDeviceToken())) {
-                            //Log.d(TAG, "onDataChange: Discount: Different token");
-                            updateTokenInDiscount(discount);
+                    if(discount!=null && mFirebaseUser != null) {
+                        if (discount.getEmail().equals(mFirebaseUser.getEmail())){
+                            //Log.d(TAG, "onDataChange: Discount: Same email");
+                            if (!discount.getToken().equals(mSharedPrefManager.getDeviceToken())) {
+                                //Log.d(TAG, "onDataChange: Discount: Different token");
+                                updateTokenInDiscount(discount);
+                            }
                         }
                     }
 

@@ -70,8 +70,6 @@ public class ManagerMapsActivity extends FragmentActivity implements OnMapReadyC
     }
 
     private void init(){
-        Log.d(TAG, "init: gogogo");
-
         mGoogleApiClient = new GoogleApiClient
                 .Builder(this)
                 .addApi(Places.GEO_DATA_API)
@@ -102,7 +100,7 @@ public class ManagerMapsActivity extends FragmentActivity implements OnMapReadyC
     }
 
     private void geoLocate(){
-        Log.d(TAG, "geoLocate: geolocating");
+        //Log.d(TAG, "geoLocate: geolocating");
         String searchString = mSearchET.getText().toString();
         Geocoder geocoder = new Geocoder(ManagerMapsActivity.this);
 
@@ -115,21 +113,20 @@ public class ManagerMapsActivity extends FragmentActivity implements OnMapReadyC
 
         if(list.size() > 0){
             Address address = list.get(0);
-            Log.d(TAG, "geoLocate: " + address.getAddressLine(0));
+            //Log.d(TAG, "geoLocate: " + address.getAddressLine(0));
             moveCamera(new LatLng(address.getLatitude(), address.getLongitude())
                     , DEFAULT_ZOOM, address.getAddressLine(0));
         }
     }
 
-    private void moveCamera(LatLng latLng, float zoom, String datitle){
+    private void moveCamera(LatLng latLng, float zoom, String title){
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 
-        if(!datitle.equals("My Location")){
-            MarkerOptions options = new MarkerOptions()
-                    .position(latLng)
-                    .title(datitle);
-            mMap.addMarker(options);
-        }
+        MarkerOptions options = new MarkerOptions()
+                .position(latLng)
+                .title(title);
+        mMap.addMarker(options);
+
 
         hideSoftKeyboard();
     }
@@ -174,7 +171,7 @@ public class ManagerMapsActivity extends FragmentActivity implements OnMapReadyC
 
         if(list.size() > 0){
             Address address = list.get(0);
-            Log.d(TAG, "geoLocate: " + address.getAddressLine(0));
+            //Log.d(TAG, "geoLocate: " + address.getAddressLine(0));
             Intent intent = new Intent(ManagerMapsActivity.this, ManagerEventActivity.class);
             intent.putExtra("Address", address.getAddressLine(0));
             startActivity(intent);
@@ -190,7 +187,6 @@ public class ManagerMapsActivity extends FragmentActivity implements OnMapReadyC
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
         getDeviceLocation();
     }
 
