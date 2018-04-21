@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.arch.persistence.room.Database;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -153,9 +154,11 @@ public class MainActivity extends AppCompatActivity
 
         new checkTokenInFirebaseAsync().execute();
 
+        new getUsernameAsync(this).execute();
+
         initBitmaps();
 
-        getIntentFromRestaurantInfoActivity();
+        //getIntentFromRestaurantInfoActivity();
 
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -181,44 +184,6 @@ public class MainActivity extends AppCompatActivity
                 detail.setText(mSharedPrefManager.getOwnerStatus());
             }
         }
-
-        Thread thread = new Thread(){
-            @Override
-            public void run() {
-                while(!isInterrupted()){
-                    try{
-                        Thread.sleep(60 * 1000);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mDatabaseReference.child("events").addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
-                                            Event event = postSnapshot.getValue(Event.class);
-                                            if(event!=null) {
-                                                if(!UtilFunction.checkExpiredEvent(event)){
-                                                    String key = event.getKey();
-                                                    mDatabaseReference.child(key).removeValue();
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
-
-                                    }
-                                });
-                            }
-                        });
-                    }catch(InterruptedException e){
-                        e.printStackTrace();
-                    }
-                }
-            }
-        };  thread.start();
-
     }
 
     //Update token in Event and Discount
@@ -260,7 +225,7 @@ public class MainActivity extends AppCompatActivity
                 mSharedPrefManager.getDeviceToken(),
                 event.getEmail()
         );
-        mDatabaseReference.child(event.getKey()).setValue(newEvent);
+        mDatabaseReference.child("events").child(event.getKey()).setValue(newEvent);
         Log.d(TAG, "updateTokenInEvent: updated: " + newEvent.getKey());
     }
 
@@ -305,7 +270,7 @@ public class MainActivity extends AppCompatActivity
                 discount.getKey(),
                 discount.getEmail()
         );
-        mDatabaseReference.child(discount.getKey()).setValue(newDiscount);
+        mDatabaseReference.child("discount").child(discount.getKey()).setValue(newDiscount);
         Log.d(TAG, "updateTokenInDiscount: updated: " + newDiscount.getKey());
     }
 
@@ -387,31 +352,6 @@ public class MainActivity extends AppCompatActivity
             } else {
                 Log.d(TAG, "onActivityResult: result not ok");
             }
-        }
-    }
-
-    //Get event from restaurant Info and upload to firebase
-    private void getIntentFromRestaurantInfoActivity(){
-        if(getIntent().hasExtra(IMAGE_NAME)
-                && getIntent().hasExtra(IMAGE_ADDRESS)
-                && getIntent().hasExtra(SELECT_DATE)
-                && getIntent().hasExtra(SELECT_TIME)){
-            String name = getIntent().getStringExtra(IMAGE_NAME);
-            String address = getIntent().getStringExtra(IMAGE_ADDRESS);
-            String date = getIntent().getStringExtra(SELECT_DATE);
-            String time = getIntent().getStringExtra(SELECT_TIME);
-            String token = SharedPrefManager.getInstance(this).getDeviceToken();
-            String email = "";
-            if(mUsername.equals(ANONYMOUS)){
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                if(user != null) {
-                    mUsername = user.getDisplayName();
-                    email = user.getEmail();
-                }
-            }
-            String key = mDatabaseReference.push().getKey();
-            Log.d(TAG, "getIntentFromRestaurantInfoActivity: key => " + key);
-            mDatabaseReference.child("events").child(key).setValue(new Event(key, mUsername, name, address, date, time, token, email));
         }
     }
 
@@ -613,6 +553,25 @@ public class MainActivity extends AppCompatActivity
             Log.d(TAG, "onCreate: User email => " + user.getEmail());
             String email = user.getEmail();
             sendTokenToServer(email);
+            return null;
+        }
+    }
+
+    private class getUsernameAsync extends AsyncTask<Void, Void, Void>{
+        SharedPrefManager manager;
+
+        private getUsernameAsync(Context context){
+            manager = SharedPrefManager.getInstance(context);
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            while(user == null)
+                user = FirebaseAuth.getInstance().getCurrentUser();
+            Log.d(TAG, "doInBackground: get username in async => " + user.getDisplayName());
+            String username = user.getDisplayName();
+            manager.saveUsername(username);
             return null;
         }
     }

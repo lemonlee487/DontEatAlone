@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import cyruslee487.donteatalone.EventRoomDatabase.Event;
@@ -70,7 +71,12 @@ public class tab1Fragment extends Fragment {
 
     private void setUpComingEvent(List<Event> list){
         if(!list.isEmpty()){
-            Event event = list.get(0);
+            for(Event e: list){
+                if(!checkExpiredEvent(e))
+                    list.remove(e);
+            }
+
+            Event event = getClosestEvent(list);
             if (event != null) {
                 mUsername.setText(event.getUsername());
                 mRestName.setText(event.getRestaurant_name());
@@ -97,5 +103,64 @@ public class tab1Fragment extends Fragment {
                 new MyEventRecyclerViewAdapter(getActivity(), list);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+    }
+
+    private Event getClosestEvent(List<Event> events){
+        Event closest_event = events.get(0);
+        int closest_time = 0, closest_date = 0;
+
+        for (Event event : events) {
+            String[] sdate = event.getDate().split("/");
+            String[] stime = event.getTime().split(":");
+            int event_concat_date = Integer.parseInt(sdate[0] + sdate[1] + sdate[2]);
+            int event_concat_time = Integer.parseInt(stime[0] + stime[1]);
+
+            if (closest_time == 0 && closest_date == 0) {
+                closest_time = event_concat_time;
+                closest_date = event_concat_date;
+                closest_event = event;
+            } else {
+                if(event_concat_date <= closest_date){
+                    if(event_concat_time <= closest_time){
+                        closest_event = event;
+                    }
+                }
+            }
+        }
+
+        return closest_event;
+    }
+
+    private static boolean checkExpiredEvent(Event event){
+        String[] sdate = event.getDate().split("/");
+        String[] stime = event.getTime().split(":");
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH)+1;
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        int hour = cal.get(Calendar.HOUR_OF_DAY);
+        int minute = cal.get(Calendar.MINUTE);
+        int event_concat_date = Integer.parseInt(sdate[0]+sdate[1]+sdate[2]);
+        int event_concat_time = Integer.parseInt(stime[0]+stime[1]);
+        int current_concat_date = Integer.parseInt(""+year+month+day);
+        int current_concat_time = Integer.parseInt(""+hour+minute);
+
+        if(event_concat_date > current_concat_date){
+            //Log.d(TAG, "checkExpiredEvent: Event date > current date");
+            return true;
+        }else if(event_concat_date == current_concat_date){
+            //Log.d(TAG, "checkExpiredEvent: Event date == current date");
+            //Log.d(TAG, "checkExpiredEvent: " + event_concat_time + " " + current_concat_time);
+            if(event_concat_time >= current_concat_time){
+                //Log.d(TAG, "checkExpiredEvent: Event time >= current time");
+                return true;
+            }else{
+                //Log.d(TAG, "checkExpiredEvent: Event time < current time");
+                return false;
+            }
+        }else {
+            //Log.d(TAG, "checkExpiredEvent: Event date < current date");
+            return false;
+        }
     }
 }

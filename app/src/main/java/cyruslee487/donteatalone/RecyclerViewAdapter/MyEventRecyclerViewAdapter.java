@@ -7,6 +7,7 @@ import android.arch.persistence.room.DatabaseConfiguration;
 import android.arch.persistence.room.InvalidationTracker;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -24,6 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 
+import cyruslee487.donteatalone.Activity.MapsActivity;
 import cyruslee487.donteatalone.Common;
 import cyruslee487.donteatalone.EventRoomDatabase.Event;
 import cyruslee487.donteatalone.EventRoomDatabase.EventDao;

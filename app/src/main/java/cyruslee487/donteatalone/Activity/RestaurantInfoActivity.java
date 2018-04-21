@@ -32,10 +32,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Calendar;
 
+import cyruslee487.donteatalone.EventRoomDatabase.Event;
 import cyruslee487.donteatalone.R;
+import cyruslee487.donteatalone.SharedPrefManager;
 
 public class RestaurantInfoActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -177,7 +181,7 @@ public class RestaurantInfoActivity extends FragmentActivity implements OnMapRea
     private void showTimePickerDialog(){
         //Log.d(TAG, "showTimePickerDialog: ");
         Calendar cal = Calendar.getInstance();
-        final int hour = cal.get(Calendar.HOUR);
+        final int hour = cal.get(Calendar.HOUR_OF_DAY);
         final int minute = cal.get(Calendar.MINUTE);
         //Log.d(TAG, "showTimePickerDialog: Current time: " + hour + ":" + minute);
 
@@ -188,7 +192,7 @@ public class RestaurantInfoActivity extends FragmentActivity implements OnMapRea
                 //Log.d(TAG, "onTimeSet: " + mTime);
 
                 if(!mDate.isEmpty() && !mTime.isEmpty()){
-                    backToMainActivity(mDate, mTime);
+                    setEvent(mDate, mTime);
                 }
             }
         };
@@ -201,13 +205,18 @@ public class RestaurantInfoActivity extends FragmentActivity implements OnMapRea
         dialog.show();
     }
 
-    private void backToMainActivity(String date, String time){
-        Intent intent = new Intent(RestaurantInfoActivity.this, MainActivity.class);
-        intent.putExtra("select_date", date);
-        intent.putExtra("select_time", time);
-        intent.putExtra(IMAGE_ADDRESS, mImageAddress);
-        intent.putExtra(IMAGE_NAME, mImageName);
-        Toast.makeText(mContext, "You have posted your event to the board", Toast.LENGTH_SHORT).show();
+    private void setEvent(String date, String time){
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        String username = SharedPrefManager.getInstance(this).getUsername();
+        String email = SharedPrefManager.getInstance(this).getOwnerEmail();
+        String token = SharedPrefManager.getInstance(this).getDeviceToken();
+        String key = reference.push().getKey();
+        Event event = new Event(
+                key, username, mImageName, mImageAddress, date, time, token, email);
+
+        reference.child("events").child(key).setValue(event);
+        Log.d(TAG, "setEvent: Restaurant Info: done");
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
     }
