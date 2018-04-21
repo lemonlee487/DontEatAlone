@@ -69,7 +69,7 @@ public class SharedPrefManager {
     }
 
     public String getUsername(){
-        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_STATUS, Context.MODE_PRIVATE);
-        return sharedPreferences.getString(TAG_USERNAME, null);
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_USERNAME, Context.MODE_PRIVATE);
+        return sharedPreferences.getString(TAG_USERNAME, "Username");
     }
 }

@@ -99,7 +99,7 @@ public class FindEventActivity extends AppCompatActivity
                             mEventsFromFirebase.add(event);
                         else{
                             String key = event.getKey();
-                            mDatabaseReference.child(key).removeValue();
+                            //mDatabaseReference.child(key).removeValue();
                         }
                     }
                 }

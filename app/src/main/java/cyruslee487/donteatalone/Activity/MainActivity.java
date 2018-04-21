@@ -77,10 +77,6 @@ public class MainActivity extends AppCompatActivity
 
     private static final String TAG = "DB";
     private static final String ANONYMOUS = "anonymous";
-    private static final String SELECT_DATE = "select_date";
-    private static final String SELECT_TIME = "select_time";
-    private static final String IMAGE_NAME = "image_name";
-    private static final String IMAGE_ADDRESS = "image_address";
     private static final String URL_STORE_TOKEN = "http://10.50.109.25/fcm/register.php";
 
     private static final int RC_SIGN_IN = 1001;
@@ -117,7 +113,7 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_main);
+        FloatingActionButton fab = findViewById(R.id.fab_main);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -157,8 +153,6 @@ public class MainActivity extends AppCompatActivity
         new getUsernameAsync(this).execute();
 
         initBitmaps();
-
-        //getIntentFromRestaurantInfoActivity();
 
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -569,7 +563,6 @@ public class MainActivity extends AppCompatActivity
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             while(user == null)
                 user = FirebaseAuth.getInstance().getCurrentUser();
-            Log.d(TAG, "doInBackground: get username in async => " + user.getDisplayName());
             String username = user.getDisplayName();
             manager.saveUsername(username);
             return null;

@@ -36,6 +36,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Calendar;
+import java.util.Objects;
 
 import cyruslee487.donteatalone.EventRoomDatabase.Event;
 import cyruslee487.donteatalone.R;
@@ -57,15 +58,11 @@ public class RestaurantInfoActivity extends FragmentActivity implements OnMapRea
     private String mImageName;
     private String mImageAddress;
     private double mLat, mLng;
-    private ImageView mImageView;
-    private TextView mTextViewRestName, mTextViewRestAddress;
-    private DatePickerDialog.OnDateSetListener mDateSetListener;
-    private TimePickerDialog.OnTimeSetListener mTimeSetListener;
     private Context mContext;
     private String mDate = "";
     private String mTime = "";
+    private int mConcat_date;
     private GoogleMap mMap;
-    private FusedLocationProviderClient mFusedLocationProviderClient;
 
 
     @Override
@@ -126,9 +123,9 @@ public class RestaurantInfoActivity extends FragmentActivity implements OnMapRea
 
     private void setImage(String imageUrl, String imageName, String address){
         //Log.d(TAG, "setImage: ");
-        mImageView = findViewById(R.id.image_view_rest_info);
-        mTextViewRestName = findViewById(R.id.rest_name_rest_info);
-        mTextViewRestAddress = findViewById(R.id.rest_address_rest_info);
+        ImageView mImageView = findViewById(R.id.image_view_rest_info);
+        TextView mTextViewRestName = findViewById(R.id.rest_name_rest_info);
+        TextView mTextViewRestAddress = findViewById(R.id.rest_address_rest_info);
 
         mTextViewRestName.setText(imageName);
         mTextViewRestAddress.setText(address);
@@ -152,11 +149,11 @@ public class RestaurantInfoActivity extends FragmentActivity implements OnMapRea
         final int day = cal.get(Calendar.DAY_OF_MONTH);
         final int concat_date = Integer.parseInt("" + year + month + day);
 
-        mDateSetListener = new DatePickerDialog.OnDateSetListener() {
+        DatePickerDialog.OnDateSetListener mDateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int mYear, int mMonth, int mDay) {
-                int mConcat_date = Integer.parseInt("" + mYear + mMonth + mDay);
-                if(mConcat_date < concat_date){
+                mConcat_date = Integer.parseInt("" + mYear + mMonth + mDay);
+                if (mConcat_date < concat_date) {
                     Toast.makeText(mContext, "Invalid Date", Toast.LENGTH_SHORT).show();
                     showDatePickerDialog();
                 } else {
@@ -174,7 +171,7 @@ public class RestaurantInfoActivity extends FragmentActivity implements OnMapRea
                 mDateSetListener,
                 year,month,day);
 
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.show();
     }
 
@@ -183,16 +180,33 @@ public class RestaurantInfoActivity extends FragmentActivity implements OnMapRea
         Calendar cal = Calendar.getInstance();
         final int hour = cal.get(Calendar.HOUR_OF_DAY);
         final int minute = cal.get(Calendar.MINUTE);
+        final int year = cal.get(Calendar.YEAR);
+        final int month = cal.get(Calendar.MONTH);
+        final int day = cal.get(Calendar.DAY_OF_MONTH);
+        final int concat_date = Integer.parseInt("" + year + month + day);
+        final int concat_time = Integer.parseInt("" + hour + minute);
         //Log.d(TAG, "showTimePickerDialog: Current time: " + hour + ":" + minute);
 
-        mTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+        TimePickerDialog.OnTimeSetListener mTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int mHour, int mMinute) {
                 mTime = mHour + ":" + mMinute;
-                //Log.d(TAG, "onTimeSet: " + mTime);
+                int mConcat_time = Integer.parseInt("" + mHour + mMinute);
 
-                if(!mDate.isEmpty() && !mTime.isEmpty()){
-                    setEvent(mDate, mTime);
+                //Log.d(TAG, "onTimeSet: " + mTime);
+                if (mConcat_date == concat_date) {
+                    if (mConcat_time > concat_time) {
+                        if (!mDate.isEmpty() && !mTime.isEmpty()) {
+                            setEvent(mDate, mTime);
+                        }
+                    } else {
+                        Toast.makeText(mContext, "Same day, Wrong time", Toast.LENGTH_SHORT).show();
+                        showTimePickerDialog();
+                    }
+                } else {
+                    if (!mDate.isEmpty() && !mTime.isEmpty()) {
+                        setEvent(mDate, mTime);
+                    }
                 }
             }
         };
@@ -228,7 +242,7 @@ public class RestaurantInfoActivity extends FragmentActivity implements OnMapRea
     }
 
     private void getDeviceLocation(){
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(RestaurantInfoActivity.this);
+        FusedLocationProviderClient mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(RestaurantInfoActivity.this);
 
         try{
             Task location = mFusedLocationProviderClient.getLastLocation();
