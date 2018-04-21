@@ -61,8 +61,6 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
     public void onBindViewHolder(mMEViewHolder holder, int position) {
         final Event event = mEventsList.get(position);
         //Common.currentToken = SharedPrefManager.getInstance(mContext).getDeviceToken();
-        Common.currentToken = event.getToken();
-        mAPIService = Common.getFCMClient();
 
         String url = getImageUrl(event.getRestaurant_name());
         if(!url.equals("nothing")){
@@ -94,6 +92,8 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
                     public void onClick(DialogInterface dialogInterface, int decision) {
                         switch(decision){
                             case DialogInterface.BUTTON_POSITIVE:
+                                Common.currentToken = event.getToken();
+                                mAPIService = Common.getFCMClient();
                                 //Notify event host
                                 cyruslee487.donteatalone.Model.Notification notification =
                                         new cyruslee487.donteatalone.Model.Notification(

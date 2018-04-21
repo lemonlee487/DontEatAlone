@@ -57,8 +57,6 @@ public class MyDiscountRecyclerViewAdapter extends RecyclerView.Adapter<MyDiscou
     @Override
     public void onBindViewHolder(MDViewHolder holder, int position) {
         final Discount discount = mDiscountList.get(position);
-        Common.currentToken = discount.getToken();
-        mAPIService = Common.getFCMClient();
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         final DatabaseReference databaseReference = firebaseDatabase.getReference().child("discount");
 
@@ -80,6 +78,8 @@ public class MyDiscountRecyclerViewAdapter extends RecyclerView.Adapter<MyDiscou
                     public void onClick(DialogInterface dialogInterface, int decision) {
                         switch(decision){
                             case DialogInterface.BUTTON_POSITIVE:
+                                Common.currentToken = discount.getToken();
+                                mAPIService = Common.getFCMClient();
                                 //Send FCM to Event host
                                 cyruslee487.donteatalone.Model.Notification notification =
                                         new cyruslee487.donteatalone.Model.Notification(

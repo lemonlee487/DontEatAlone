@@ -56,8 +56,6 @@ public class FindDiscountRecyclerViewAdapter extends RecyclerView.Adapter<FindDi
     @Override
     public void onBindViewHolder(FDViewHolder holder, int position) {
         final Discount discount = mDiscountList.get(position);
-        Common.currentToken = discount.getToken();
-        mAPIService = Common.getFCMClient();
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         final DatabaseReference databaseReference = firebaseDatabase.getReference().child("discount");
 
@@ -80,6 +78,8 @@ public class FindDiscountRecyclerViewAdapter extends RecyclerView.Adapter<FindDi
                         public void onClick(DialogInterface dialogInterface, int decision) {
                             switch(decision){
                                 case DialogInterface.BUTTON_POSITIVE:
+                                    Common.currentToken = discount.getToken();
+                                    mAPIService = Common.getFCMClient();
                                     //Insert discount to room database
                                     new insertMyDiscountAsync(mContext, discount).execute(discount);
                                     break;
