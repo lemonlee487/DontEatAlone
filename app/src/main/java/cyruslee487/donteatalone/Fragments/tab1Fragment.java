@@ -71,9 +71,9 @@ public class tab1Fragment extends Fragment {
 
     private void setUpComingEvent(List<Event> list){
         if(!list.isEmpty()){
-            for(Event e: list){
-                if(!checkExpiredEvent(e))
-                    list.remove(e);
+            for(int i = 0; i < list.size(); i++){
+                if(!checkExpiredEvent(list.get(i)))
+                    list.remove(list.get(i));
             }
 
             Event event = getClosestEvent(list);

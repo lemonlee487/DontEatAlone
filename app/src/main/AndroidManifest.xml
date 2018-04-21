@@ -9,7 +9,7 @@
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_sad_pepe_icon"
-        android:label=""
+        android:label="Don't Eat Alone"
         android:roundIcon="@mipmap/ic_sad_pepe_icon_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">

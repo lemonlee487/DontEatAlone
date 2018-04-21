@@ -142,18 +142,21 @@ public class MainActivity extends AppCompatActivity
         mFirebaseAuth = FirebaseAuth.getInstance();
         mSharedPrefManager = SharedPrefManager.getInstance(this);
 
+        //Check location permission
         if(isServiceOk()){
             getPermission();
         }
 
+        //Send token to server
         new sendTokenAsync().execute();
-
+        //Check and update token if same email different token
         new checkTokenInFirebaseAsync().execute();
-
+        //Get username from FirebaseAuth and save in share pref
         new getUsernameAsync(this).execute();
-
+        //Initialize recycler view with info and image
         initBitmaps();
 
+        //Sign in and out operation
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -167,6 +170,7 @@ public class MainActivity extends AppCompatActivity
             }
         };
 
+        //Check for manager permission
         if(mSharedPrefManager != null && mFirebaseAuth.getCurrentUser() != null) {
             if (isManager()) {
                 Log.d(TAG, "onCreate: I am owner");
@@ -180,7 +184,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    //Update token in Event and Discount
+    //Check event with same email as current user but with different token
     private void checkEventToken(){
         DatabaseReference databaseReference = mFirebaseDatabase.getReference().child("events");
         databaseReference.addValueEventListener(new ValueEventListener() {
@@ -207,7 +211,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
-
+    //Update event's token with same email as current user but different token
     private void updateTokenInEvent(Event event){
         Event newEvent = new Event(
                 event.getKey(),
@@ -222,7 +226,7 @@ public class MainActivity extends AppCompatActivity
         mDatabaseReference.child("events").child(event.getKey()).setValue(newEvent);
         Log.d(TAG, "updateTokenInEvent: updated: " + newEvent.getKey());
     }
-
+    //Check discount iwht same email as current user but different token
     private void checkDiscountToken(){
         DatabaseReference databaseReference = mFirebaseDatabase.getReference().child("discount");
         databaseReference.addValueEventListener(new ValueEventListener() {
@@ -249,7 +253,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
-
+    //Update discount's token with same email as current user but different token
     private void updateTokenInDiscount(Discount discount){
         Discount newDiscount = new Discount(
                 discount.getAddress(),
@@ -267,7 +271,7 @@ public class MainActivity extends AppCompatActivity
         mDatabaseReference.child("discount").child(discount.getKey()).setValue(newDiscount);
         Log.d(TAG, "updateTokenInDiscount: updated: " + newDiscount.getKey());
     }
-
+    //Async task that operate functions from above
     private class checkTokenInFirebaseAsync extends AsyncTask<Void, Void, Void>{
         @Override
         protected Void doInBackground(Void... voids) {
@@ -293,7 +297,7 @@ public class MainActivity extends AppCompatActivity
         }
         return false;
     }
-
+    //Get permission from user
     private void getPermission(){
         //Log.d(TAG, "init: Getting permission");
         if(checkLocationPermission()){
@@ -310,7 +314,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
-
+    //Check permission granted
     private boolean checkLocationPermission() {
         int permissioinState = ActivityCompat.checkSelfPermission(
                 this, android.Manifest.permission.ACCESS_FINE_LOCATION);
@@ -481,7 +485,7 @@ public class MainActivity extends AppCompatActivity
 
         initRecyclerView();
     }
-
+    //Initialize recycler view
     private void initRecyclerView(){
         RecyclerView recyclerView = findViewById(R.id.recyclerview_content_main);
         MainMenuRecyclerViewAdapter mAdapter =
@@ -490,7 +494,7 @@ public class MainActivity extends AppCompatActivity
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
     }
-
+    //Insert predefined restaurant info into restuarnat class
     private void insertRestaurantArray(String rest_name, String rest_address, String image_url,
                                        double latitude, double longitude){
         Restaurant restaurant = new Restaurant(rest_name, rest_address, image_url, latitude, longitude);
@@ -537,7 +541,7 @@ public class MainActivity extends AppCompatActivity
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
     }
-
+    //Asynctask that send token to server using above function
     private class sendTokenAsync extends AsyncTask<Void, Void, Void>{
         @Override
         protected Void doInBackground(Void... voids) {
@@ -550,7 +554,7 @@ public class MainActivity extends AppCompatActivity
             return null;
         }
     }
-
+    //Get and save display of current logged in user to sharedpref
     private class getUsernameAsync extends AsyncTask<Void, Void, Void>{
         SharedPrefManager manager;
 
@@ -584,7 +588,7 @@ public class MainActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
-
+//Manager permission dialog
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -630,7 +634,7 @@ public class MainActivity extends AppCompatActivity
         }
         return super.onOptionsItemSelected(item);
     }
-
+    //Check manager permission
     private boolean isManager(){
         String status = mSharedPrefManager.getOwnerStatus();
         String email = mSharedPrefManager.getOwnerEmail();
